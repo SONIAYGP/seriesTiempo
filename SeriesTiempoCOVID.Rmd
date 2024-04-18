@@ -1,0 +1,45 @@
+--- 
+title: "Análisis de Series de Tiempo relacionados con COVID19"
+author: "GRUPO 6: Maria José Reina Torres, Sonia Yurany Gallego Paz, Juan José León Tabares"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+biblio-style: apalike
+link-citations: yes
+github-repo: Familia GSM\Documents\Data Science\Series de tiempo
+description: "Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024"
+---
+
+# Introducción:
+
+ La base de datos owid-covid-data es una colección de datos de COVID-19 mantenidos por Our World in Data.Los datos que encuentra aquí son los casos confirmados y muertes, estos datos se recopilan del Panel de control de coronavirus de la Organización Mundial de la Salud, el conjunto de datos de casos y muertes se actualiza diariamente.
+Nota 1: Las marcas de hora y fecha reflejan cuándo la OMS actualizó los datos por última vez. Debido al tiempo necesario para procesar y validar los datos entrantes, hay un retraso entre la presentación de informes a la OMS y la actualización del tablero.
+Nota 2: Los recuentos y las correcciones realizadas después de estos tiempos se trasladarán al siguiente ciclo de informes para esa región específica. El retraso en la presentación de informes para cualquier país, territorio o área específica puede dar lugar a que se presenten recuentos agrupados de varios días, con una actualización retrospectiva de los recuentos de días anteriores para reflejar con precisión las tendencias. Los errores importantes en los datos detectados o notificados a la OMS podrán corregirse a intervalos más frecuentes.
+
+Fuente: <https://github.com/owid/covid-19-data/tree/master/public/data>
+
+
+```{r eval=FALSE}
+install.packages("bookdown")
+# or the development version
+# devtools::install_github("rstudio/bookdown")
+```
+
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
+
+```{r}
+# Cargar el archivo 
+covid <- read.csv("C:/Users/Familia GSM/Documents/Data Science/Series de tiempo/owid-covid-data.csv")
+head(covid)
+
+```
+
+
+
