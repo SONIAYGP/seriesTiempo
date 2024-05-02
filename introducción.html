@@ -23,7 +23,7 @@
 <meta name="author" content="GRUPO 6: Maria José Reina Torres, Sonia Yurany Gallego Paz, Juan José León Tabares" />
 
 
-<meta name="date" content="2024-04-17" />
+<meta name="date" content="2024-05-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 
-
+<link rel="next" href="análisis-exploratorio-de-datos.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -136,7 +136,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="1" data-path=""><a href="#introducción"><i class="fa fa-check"></i><b>1</b> Introducción:</a></li>
+<li class="chapter" data-level="1" data-path="introducción.html"><a href="introducción.html"><i class="fa fa-check"></i><b>1</b> Introducción:</a></li>
+<li class="chapter" data-level="2" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html"><i class="fa fa-check"></i><b>2</b> Análisis Exploratorio de datos:</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#exploración-y-preprocesamiento-del-dataset"><i class="fa fa-check"></i><b>2.1</b> Exploración y preprocesamiento del dataset:</a></li>
+<li class="chapter" data-level="2.2" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#estructura-y-exploración-de-datos-en-serie-de-tiempo"><i class="fa fa-check"></i><b>2.2</b> Estructura y exploración de datos en serie de tiempo:</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -157,20 +162,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Análisis de Series de Tiempo relacionados con COVID19</h1>
 <p class="author"><em>GRUPO 6: Maria José Reina Torres, Sonia Yurany Gallego Paz, Juan José León Tabares</em></p>
-<p class="date"><em>2024-04-17</em></p>
+<p class="date"><em>2024-05-02</em></p>
 </div>
 <div id="introducción" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">1</span> Introducción:<a href="#introducción" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<h1><span class="header-section-number">1</span> Introducción:<a href="introducción.html#introducción" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>La base de datos owid-covid-data es una colección de datos de COVID-19 mantenidos por Our World in Data.Los datos que encuentra aquí son los casos confirmados y muertes, estos datos se recopilan del Panel de control de coronavirus de la Organización Mundial de la Salud, el conjunto de datos de casos y muertes se actualiza diariamente.
 Nota 1: Las marcas de hora y fecha reflejan cuándo la OMS actualizó los datos por última vez. Debido al tiempo necesario para procesar y validar los datos entrantes, hay un retraso entre la presentación de informes a la OMS y la actualización del tablero.
 Nota 2: Los recuentos y las correcciones realizadas después de estos tiempos se trasladarán al siguiente ciclo de informes para esa región específica. El retraso en la presentación de informes para cualquier país, territorio o área específica puede dar lugar a que se presenten recuentos agrupados de varios días, con una actualización retrospectiva de los recuentos de días anteriores para reflejar con precisión las tendencias. Los errores importantes en los datos detectados o notificados a la OMS podrán corregirse a intervalos más frecuentes.</p>
 <p>Fuente: <a href="https://github.com/owid/covid-19-data/tree/master/public/data" class="uri">https://github.com/owid/covid-19-data/tree/master/public/data</a></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;bookdown&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># or the development version</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># devtools::install_github(&quot;rstudio/bookdown&quot;)</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Cargar el archivo </span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>covid <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;C:/Users/Familia GSM/Documents/Data Science/Series de tiempo/owid-covid-data.csv&quot;</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">head</span>(covid)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="introducción.html#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;bookdown&quot;</span>)</span>
+<span id="cb1-2"><a href="introducción.html#cb1-2" tabindex="-1"></a><span class="co"># or the development version</span></span>
+<span id="cb1-3"><a href="introducción.html#cb1-3" tabindex="-1"></a><span class="co"># devtools::install_github(&quot;rstudio/bookdown&quot;)</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="introducción.html#cb2-1" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;httr&quot;</span>)) <span class="fu">install.packages</span>(<span class="st">&quot;httr&quot;</span>)</span></code></pre></div>
+<pre><code>## Loading required package: httr</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="introducción.html#cb4-1" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
+<span id="cb4-2"><a href="introducción.html#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="introducción.html#cb4-3" tabindex="-1"></a><span class="co"># URL para descarga directa</span></span>
+<span id="cb4-4"><a href="introducción.html#cb4-4" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&quot;https://drive.google.com/uc?export=download&amp;id=1CAfxuMVh2PhdocdOyEH2tzDv2uTykwKi&quot;</span></span>
+<span id="cb4-5"><a href="introducción.html#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="introducción.html#cb4-6" tabindex="-1"></a><span class="co"># Se descarga y lee el archivo:</span></span>
+<span id="cb4-7"><a href="introducción.html#cb4-7" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
+<span id="cb4-8"><a href="introducción.html#cb4-8" tabindex="-1"></a><span class="fu">download.file</span>(url, temp)</span>
+<span id="cb4-9"><a href="introducción.html#cb4-9" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(temp)</span>
+<span id="cb4-10"><a href="introducción.html#cb4-10" tabindex="-1"></a><span class="fu">unlink</span>(temp)  <span class="co"># Elimina el archivo temporal</span></span>
+<span id="cb4-11"><a href="introducción.html#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="introducción.html#cb4-12" tabindex="-1"></a><span class="co"># Primeros datos</span></span>
+<span id="cb4-13"><a href="introducción.html#cb4-13" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="introducción.html#cb4-14" tabindex="-1"></a><span class="fu">head</span>(datos)</span></code></pre></div>
 <pre><code>##   iso_code continent    location       date total_cases new_cases
 ## 1      AFG      Asia Afghanistan 2020-01-05          NA         0
 ## 2      AFG      Asia Afghanistan 2020-01-06          NA         0
@@ -325,7 +343,7 @@ Nota 2: Los recuentos y las correcciones realizadas después de estos tiempos se
         </div>
       </div>
 
-
+<a href="análisis-exploratorio-de-datos.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

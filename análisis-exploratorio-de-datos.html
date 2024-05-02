@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Análisis Exploratorio de datos: | Análisis de Series de Tiempo relacionados con COVID19</title>
+  <meta name="description" content="Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024" />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Análisis Exploratorio de datos: | Análisis de Series de Tiempo relacionados con COVID19" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024" />
+  <meta name="github-repo" content="Familia GSMSciencede tiempo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Análisis Exploratorio de datos: | Análisis de Series de Tiempo relacionados con COVID19" />
+  
+  <meta name="twitter:description" content="Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024" />
+  
+
+<meta name="author" content="GRUPO 6: Maria José Reina Torres, Sonia Yurany Gallego Paz, Juan José León Tabares" />
+
+
+<meta name="date" content="2024-05-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="introducción.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="introducción.html"><a href="introducción.html"><i class="fa fa-check"></i><b>1</b> Introducción:</a></li>
+<li class="chapter" data-level="2" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html"><i class="fa fa-check"></i><b>2</b> Análisis Exploratorio de datos:</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#exploración-y-preprocesamiento-del-dataset"><i class="fa fa-check"></i><b>2.1</b> Exploración y preprocesamiento del dataset:</a></li>
+<li class="chapter" data-level="2.2" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#estructura-y-exploración-de-datos-en-serie-de-tiempo"><i class="fa fa-check"></i><b>2.2</b> Estructura y exploración de datos en serie de tiempo:</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis de Series de Tiempo relacionados con COVID19</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="análisis-exploratorio-de-datos" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Análisis Exploratorio de datos:<a href="análisis-exploratorio-de-datos.html#análisis-exploratorio-de-datos" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Iniciamos explorando el conjunto de datos seleccionado, identificando tipos de variables y valores nulos o perdidos:</p>
+<div id="exploración-y-preprocesamiento-del-dataset" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Exploración y preprocesamiento del dataset:<a href="análisis-exploratorio-de-datos.html#exploración-y-preprocesamiento-del-dataset" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Incialmente se exploró el contenido del dataframe identificando 67 variables con 390659 observaciones de pacientes con diagnóstico de covid desde enero del año 2020 hasta febrero del año 2024. Debido a la extención de esta información, no se presenta el resultado de la función str.</p>
+<p>se continúa con un resumen estadístico que igualmente se decide no presentar dada la extensión de las variables. Llama la atención que se identifica que la variable date está en formato character, se seleccionan solo variables de interés por el momento: date, continent, location, date,new_cases y new_deaths</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="análisis-exploratorio-de-datos.html#cb6-1" tabindex="-1"></a>covid <span class="ot">&lt;-</span> datos[, <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">9</span>)]</span>
+<span id="cb6-2"><a href="análisis-exploratorio-de-datos.html#cb6-2" tabindex="-1"></a><span class="fu">str</span>(covid)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    390659 obs. of  5 variables:
+##  $ continent : chr  &quot;Asia&quot; &quot;Asia&quot; &quot;Asia&quot; &quot;Asia&quot; ...
+##  $ location  : chr  &quot;Afghanistan&quot; &quot;Afghanistan&quot; &quot;Afghanistan&quot; &quot;Afghanistan&quot; ...
+##  $ date      : chr  &quot;2020-01-05&quot; &quot;2020-01-06&quot; &quot;2020-01-07&quot; &quot;2020-01-08&quot; ...
+##  $ new_cases : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ new_deaths: num  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+<p>Se confirma que ya están definidas las variables seleccionadas, ahora se estructura en formato fecha la variable date:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="análisis-exploratorio-de-datos.html#cb8-1" tabindex="-1"></a>covid<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(covid<span class="sc">$</span>date, <span class="at">format =</span> <span class="st">&quot;%Y-%m-%d&quot;</span>)</span>
+<span id="cb8-2"><a href="análisis-exploratorio-de-datos.html#cb8-2" tabindex="-1"></a><span class="fu">summary</span>(covid)</span></code></pre></div>
+<pre><code>##   continent           location              date              new_cases       
+##  Length:390659      Length:390659      Min.   :2020-01-01   Min.   :       0  
+##  Class :character   Class :character   1st Qu.:2021-01-27   1st Qu.:       0  
+##  Mode  :character   Mode  :character   Median :2022-02-16   Median :       0  
+##                                        Mean   :2022-02-16   Mean   :    8654  
+##                                        3rd Qu.:2023-03-08   3rd Qu.:       0  
+##                                        Max.   :2024-04-15   Max.   :44236227  
+##                                                             NA&#39;s   :10991     
+##    new_deaths       
+##  Min.   :     0.00  
+##  1st Qu.:     0.00  
+##  Median :     0.00  
+##  Mean   :    77.49  
+##  3rd Qu.:     0.00  
+##  Max.   :103719.00  
+##  NA&#39;s   :10668</code></pre>
+<p>Se identifica que ya la fecha se encuentra en el formato indicado, iniciando por el 01 de enero de 2020 y terminando el 15 de abril de 2024 (se actualiza con frecuencia). En la variable nuevos casos se identifica que el 50% de los datos corresponden a 0 pacientes y que hay un valor extremo de 44236227, adicionalmente 10.991 NAs. En la variable nuevas muertes, de igual manera el 50% de las fechas hubo 0 muertes, tiene un valor extremo de 103719 y cuenta con 10.668 NAs.</p>
+<p>a continuacion se grafican los datos nulos para realizar la repuracion de los casos y muertes en valores NA.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="análisis-exploratorio-de-datos.html#cb10-1" tabindex="-1"></a><span class="fu">library</span>(mice)</span>
+<span id="cb10-2"><a href="análisis-exploratorio-de-datos.html#cb10-2" tabindex="-1"></a>grafico <span class="ot">&lt;-</span> <span class="fu">md.pattern</span>(covid, <span class="at">rotate.names =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Se confirma que las dos variables referidas anteriormente contienen datos NA, continente, location y date tienen datos completos.</p>
+<p>Según la descripción de las variables en la base de datos original, cuando ocurre un cambio negativo en los datos diarios reportados sobre casos o muertes confirmadas debido a una corrección de datos, en lugar de mostrar un número negativo (lo cual no tendría sentido en este contexto), el valor se establece como “NA” (no disponible) para indicar que la información no está disponible o no es aplicable en esa situación.</p>
+<p>En casos excepcionales en los que nuestra fuente de casos y muertes confirmados informa un cambio diario negativo debido a una corrección de datos, configuramos la métrica correspondiente ( new_cases y new_deaths) en NA.</p>
+<p>Debido a lo anterior, se decide eliminar los datos como NA dado que no se tuvo información para esas fechas y no tiene sentido aplicar una imputación dado que no corresponden a 0 casos. Sin embargo, solo se eliminan cuando ambas variables contienen NA.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="análisis-exploratorio-de-datos.html#cb11-1" tabindex="-1"></a>covid <span class="ot">&lt;-</span> <span class="fu">subset</span>(covid, <span class="sc">!</span><span class="fu">is.na</span>(new_cases) <span class="sc">|</span> <span class="sc">!</span><span class="fu">is.na</span>(new_deaths))</span>
+<span id="cb11-2"><a href="análisis-exploratorio-de-datos.html#cb11-2" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="análisis-exploratorio-de-datos.html#cb11-3" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb11-4"><a href="análisis-exploratorio-de-datos.html#cb11-4" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="análisis-exploratorio-de-datos.html#cb11-5" tabindex="-1"></a>grafico <span class="ot">&lt;-</span> <span class="fu">md.pattern</span>(covid, <span class="at">rotate.names =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Quedan eliminados las fechas en las cuales hay NA tanto en nuevos casos como en nuevas muertes.</p>
+</div>
+<div id="estructura-y-exploración-de-datos-en-serie-de-tiempo" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Estructura y exploración de datos en serie de tiempo:<a href="análisis-exploratorio-de-datos.html#estructura-y-exploración-de-datos-en-serie-de-tiempo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Se realiza una agrupacion de los nuevos casos de covid por mes y se calcula la suma de ‘valor’</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="análisis-exploratorio-de-datos.html#cb12-1" tabindex="-1"></a>datos_agrupados_casos <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(new_cases <span class="sc">~</span> <span class="fu">format</span>(date, <span class="st">&quot;%Y-%m&quot;</span>), <span class="at">data =</span> covid, sum)</span>
+<span id="cb12-2"><a href="análisis-exploratorio-de-datos.html#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="análisis-exploratorio-de-datos.html#cb12-3" tabindex="-1"></a><span class="co"># Se Renombra la columna resultante</span></span>
+<span id="cb12-4"><a href="análisis-exploratorio-de-datos.html#cb12-4" tabindex="-1"></a><span class="fu">colnames</span>(datos_agrupados_casos) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Mes&quot;</span>, <span class="st">&quot;Total&quot;</span>)</span>
+<span id="cb12-5"><a href="análisis-exploratorio-de-datos.html#cb12-5" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="análisis-exploratorio-de-datos.html#cb12-6" tabindex="-1"></a><span class="fu">print</span>(datos_agrupados_casos)</span></code></pre></div>
+<pre><code>##        Mes     Total
+## 1  2020-01      8140
+## 2  2020-02    305693
+## 3  2020-03   2774974
+## 4  2020-04   8618144
+## 5  2020-05  12839860
+## 6  2020-06  15852034
+## 7  2020-07  24432242
+## 8  2020-08  37568841
+## 9  2020-09  33477437
+## 10 2020-10  43233927
+## 11 2020-11  84396057
+## 12 2020-12  72463292
+## 13 2021-01  92905629
+## 14 2021-02  46698894
+## 15 2021-03  55239123
+## 16 2021-04  82184783
+## 17 2021-05  97178712
+## 18 2021-06  43778474
+## 19 2021-07  54942174
+## 20 2021-08  91154888
+## 21 2021-09  63275828
+## 22 2021-10  62902229
+## 23 2021-11  63733746
+## 24 2021-12  85019217
+## 25 2022-01 411909030
+## 26 2022-02 259990699
+## 27 2022-03 200032442
+## 28 2022-04 119360645
+## 29 2022-05  81377207
+## 30 2022-06  65532651
+## 31 2022-07 143781254
+## 32 2022-08  95236731
+## 33 2022-09  59736672
+## 34 2022-10  67234159
+## 35 2022-11  44976971
+## 36 2022-12 272018579
+## 37 2023-01 192447693
+## 38 2023-02  20376737
+## 39 2023-03  15441982
+## 40 2023-04  15183704
+## 41 2023-05   7952298
+## 42 2023-06   3883854
+## 43 2023-07   4632445
+## 44 2023-08   6367920
+## 45 2023-09   3741520
+## 46 2023-10   3446304
+## 47 2023-11   3431653
+## 48 2023-12   7072238
+## 49 2024-01   2726825
+## 50 2024-02   1400012
+## 51 2024-03   1401727</code></pre>
+<p>Se confirma que se realizó la operación y se le asigna formato de fecha a la variable mes, no se utiliza zoo dado que los valores faltantes no son periódicos ni sistemáticos, entonces, al tener los datos NA ya eliminados, se aplica ts:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="análisis-exploratorio-de-datos.html#cb14-1" tabindex="-1"></a>datos_agrupados_casos<span class="sc">$</span>Mes <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(datos_agrupados_casos<span class="sc">$</span>Mes, <span class="at">format =</span> <span class="st">&quot;%Y-%m&quot;</span>)</span>
+<span id="cb14-2"><a href="análisis-exploratorio-de-datos.html#cb14-2" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="análisis-exploratorio-de-datos.html#cb14-3" tabindex="-1"></a><span class="co"># se establece la fecha de inicio y la frecuencia por meses</span></span>
+<span id="cb14-4"><a href="análisis-exploratorio-de-datos.html#cb14-4" tabindex="-1"></a>indice_casos.ts<span class="ot">&lt;-</span><span class="fu">ts</span>(datos_agrupados_casos<span class="sc">$</span>Total,<span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2020</span>,<span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb14-5"><a href="análisis-exploratorio-de-datos.html#cb14-5" tabindex="-1"></a>(indice_casos.ts)</span></code></pre></div>
+<pre><code>##            Jan       Feb       Mar       Apr       May       Jun       Jul
+## 2020      8140    305693   2774974   8618144  12839860  15852034  24432242
+## 2021  92905629  46698894  55239123  82184783  97178712  43778474  54942174
+## 2022 411909030 259990699 200032442 119360645  81377207  65532651 143781254
+## 2023 192447693  20376737  15441982  15183704   7952298   3883854   4632445
+## 2024   2726825   1400012   1401727                                        
+##            Aug       Sep       Oct       Nov       Dec
+## 2020  37568841  33477437  43233927  84396057  72463292
+## 2021  91154888  63275828  62902229  63733746  85019217
+## 2022  95236731  59736672  67234159  44976971 272018579
+## 2023   6367920   3741520   3446304   3431653   7072238
+## 2024</code></pre>
+<p><strong>Cálculo de Promedio móvil simple de nuevos casos con ventana de 12 periodos (para una tendencia anual)</strong>:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="análisis-exploratorio-de-datos.html#cb16-1" tabindex="-1"></a><span class="fu">library</span>(zoo)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="análisis-exploratorio-de-datos.html#cb19-1" tabindex="-1"></a>promedio_movil_tendencia <span class="ot">&lt;-</span> <span class="fu">rollmean</span>(indice_casos.ts, <span class="at">k =</span> <span class="dv">12</span>, <span class="at">align =</span> <span class="st">&quot;right&quot;</span>, <span class="at">na.pad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-2"><a href="análisis-exploratorio-de-datos.html#cb19-2" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="análisis-exploratorio-de-datos.html#cb19-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">las=</span><span class="dv">1</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb19-4"><a href="análisis-exploratorio-de-datos.html#cb19-4" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="análisis-exploratorio-de-datos.html#cb19-5" tabindex="-1"></a><span class="fu">plot</span>(promedio_movil_tendencia, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,<span class="at">main =</span> <span class="st">&quot;Tendencia de promedio móvil casos nuevos de Covid&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>En la gráfica se observa que desde el año 2021, la tendencia de nuevos casos de COVID 19 está en aumento con un pico a incio del año 2023, a partir del cual inicia el descenso marcado.</p>
+<p>A continuación se calcula el <strong>Promedio móvil simple con ventana de 3 periodos (para una estacionalidad trimestral)</strong>:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="análisis-exploratorio-de-datos.html#cb20-1" tabindex="-1"></a>promedio_movil_estacionalidad <span class="ot">&lt;-</span> <span class="fu">rollmean</span>(indice_casos.ts, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">align =</span> <span class="st">&quot;right&quot;</span>, <span class="at">na.pad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-2"><a href="análisis-exploratorio-de-datos.html#cb20-2" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="análisis-exploratorio-de-datos.html#cb20-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">las=</span><span class="dv">1</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb20-4"><a href="análisis-exploratorio-de-datos.html#cb20-4" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="análisis-exploratorio-de-datos.html#cb20-5" tabindex="-1"></a><span class="fu">plot</span>(promedio_movil_estacionalidad, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;green&quot;</span>,<span class="at">main =</span> <span class="st">&quot;Estacionalidad en casos nuevos de Covid&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>Con el cálculo del promedio móvil de 3 puntos, cada punto de la gráfica es el promedio de tres puntos consecutivos en la serie de tiempo original. Con align = “right”, el promedio móvil se alinea con el último de los tres puntos. Esto ayuda a suavizar la serie, lo que significa que los picos y valles se suavizan para resaltar tendencias subyacentes. Esto es útil para identificar tendencias generales o patrones en la serie de tiempo que podrían no ser evidentes en la serie original, más volátil.</p>
+<p>Al observar la gráfica, no se identifican patrones que ocurran en intervalos regulares del tiempo. Se puede calcular autocorrelación para confirmarlo.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="análisis-exploratorio-de-datos.html#cb21-1" tabindex="-1"></a><span class="co"># Calcular autocorrelación</span></span>
+<span id="cb21-2"><a href="análisis-exploratorio-de-datos.html#cb21-2" tabindex="-1"></a><span class="fu">acf</span>(promedio_movil_estacionalidad, <span class="at">na.action =</span> na.pass)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Este grafico muestra los coeficientes de autocorrelación para diferentes retardos (lags) de la serie de tiempo. Interpretación:</p>
+<p><em>Líneas Hacia Arriba y Hacia Abajo:</em> Las barras hacia arriba indican autocorrelación positiva en ese retardo, lo que significa que los valores pasados tienen una relación positiva con los valores actuales.
+Las barras hacia abajo indican autocorrelación negativa, lo que significa que los valores pasados tienen una relación negativa con los valores actuales. En la gráfica se observa barras que empiezan hacia arriba y luego hacia abajo, podría indicar un cambio en el patrón de correlación a medida que aumenta el retardo. Esto puede significar que la relación entre los valores pasados y actuales cambia de positiva a negativa.</p>
+<p><em>Tamaño de las Barras:</em> El tamaño de las barras representa la magnitud de la correlación entre los valores de la serie con un retardo específico. Las barras más altas indican una correlación más fuerte.</p>
+<p><em>Estacionalidad:</em> Si hay un patrón periódico en el gráfico, donde las barras suben y bajan en intervalos regulares, es un indicio de estacionalidad. Eneste caso, no hay un patrón periódico, lo que nos confirma la idea de no estacionalidad.</p>
+<p><em>Significancia Estadística:</em> Las líneas punteadas horizontales representan intervalos de confianza. Las barras que sobrepasan estas líneas indican autocorrelación significativa, la cual se presentó al inicio del periodo solamente.</p>
+<p><strong>Cálculo del promedio móvil de rezago con ventana de 1 periodo</strong></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="análisis-exploratorio-de-datos.html#cb22-1" tabindex="-1"></a>promedio_movil_rezago <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">lag</span>(indice_casos.ts, <span class="dv">1</span>)</span>
+<span id="cb22-2"><a href="análisis-exploratorio-de-datos.html#cb22-2" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="análisis-exploratorio-de-datos.html#cb22-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">las=</span><span class="dv">1</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb22-4"><a href="análisis-exploratorio-de-datos.html#cb22-4" tabindex="-1"></a><span class="fu">plot</span> (promedio_movil_rezago,  <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>,<span class="at">main =</span> <span class="st">&quot;Rezago en casos nuevos de Covid&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>En la gráfica obtenida se encuentra la serie rezagada desplazada a la derecha en comparación con la serie original. En una gráfica posterior se generará una comparación entre la serie rezagada con la original.</p>
+<p>Gráfico de la serie de tiempo original junto con los promedios móviles:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="análisis-exploratorio-de-datos.html#cb23-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)</span>
+<span id="cb23-2"><a href="análisis-exploratorio-de-datos.html#cb23-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">las=</span><span class="dv">1</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>) <span class="co"># Configura el estilo de la etiqueta del eje y en horizontal</span></span>
+<span id="cb23-3"><a href="análisis-exploratorio-de-datos.html#cb23-3" tabindex="-1"></a><span class="fu">plot</span>(indice_casos.ts, <span class="at">main =</span> <span class="st">&quot;Serie de Tiempo Promedios Móviles casos nuevos por Covid 19&quot;</span>,</span>
+<span id="cb23-4"><a href="análisis-exploratorio-de-datos.html#cb23-4" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb23-5"><a href="análisis-exploratorio-de-datos.html#cb23-5" tabindex="-1"></a><span class="fu">lines</span>(promedio_movil_tendencia, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>)</span>
+<span id="cb23-6"><a href="análisis-exploratorio-de-datos.html#cb23-6" tabindex="-1"></a><span class="fu">lines</span>(promedio_movil_estacionalidad, <span class="at">col =</span> <span class="st">&quot;green&quot;</span>)</span>
+<span id="cb23-7"><a href="análisis-exploratorio-de-datos.html#cb23-7" tabindex="-1"></a><span class="fu">lines</span>(promedio_movil_rezago, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>)</span>
+<span id="cb23-8"><a href="análisis-exploratorio-de-datos.html#cb23-8" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Serie de Tiempo&quot;</span>, <span class="st">&quot;Promedio Móvil Tendencia&quot;</span>, <span class="st">&quot;Promedio Móvil Estacionalidad&quot;</span>, <span class="st">&quot;Promedio Móvil de Rezago&quot;</span>),</span>
+<span id="cb23-9"><a href="análisis-exploratorio-de-datos.html#cb23-9" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;orange&quot;</span>), <span class="at">lty =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>De acuerdo a la gráfica anterior con promedios móviles de casos de covid, se concluye que el rezago muestra la observación que ocurre antes la observación de la serie de tiempo y se observa un paralelismo en ambos promedios. En la ocurrencia de casos nuevos se observan dos grandes picos a inicios del año 2022, al finalizar el año 2022 y al iniciar el 2023.</p>
+<p>Desde sus inicios hasta el año 2023 la tendencia de casos nuevos por covid estuvo en aumento, apartir de ahí hasta el 2024 se ha observado un descenso. No se identificó estacionalidad.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="análisis-exploratorio-de-datos.html#cb24-1" tabindex="-1"></a><span class="fu">class</span>(indice_casos.ts)</span></code></pre></div>
+<pre><code>## [1] &quot;ts&quot;</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="análisis-exploratorio-de-datos.html#cb26-1" tabindex="-1"></a><span class="fu">start</span>(indice_casos.ts)</span></code></pre></div>
+<pre><code>## [1] 2020    1</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="análisis-exploratorio-de-datos.html#cb28-1" tabindex="-1"></a><span class="fu">end</span>(indice_casos.ts)</span></code></pre></div>
+<pre><code>## [1] 2024    3</code></pre>
+<p>A continuación se realiza el mismo proceso exploratorio con los datos de nuevas muertes de covid por mes.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="análisis-exploratorio-de-datos.html#cb30-1" tabindex="-1"></a><span class="co"># Agrupar por meses y calcular la suma de &#39;valor&#39;</span></span>
+<span id="cb30-2"><a href="análisis-exploratorio-de-datos.html#cb30-2" tabindex="-1"></a>datos_agrupados_muertes <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(new_deaths <span class="sc">~</span> <span class="fu">format</span>(date, <span class="st">&quot;%Y-%m&quot;</span>), <span class="at">data =</span> covid, sum)</span>
+<span id="cb30-3"><a href="análisis-exploratorio-de-datos.html#cb30-3" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="análisis-exploratorio-de-datos.html#cb30-4" tabindex="-1"></a><span class="co"># Renombrar la columna resultante</span></span>
+<span id="cb30-5"><a href="análisis-exploratorio-de-datos.html#cb30-5" tabindex="-1"></a><span class="fu">colnames</span>(datos_agrupados_muertes) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Mes&quot;</span>, <span class="st">&quot;Total&quot;</span>)</span>
+<span id="cb30-6"><a href="análisis-exploratorio-de-datos.html#cb30-6" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="análisis-exploratorio-de-datos.html#cb30-7" tabindex="-1"></a><span class="fu">print</span>(datos_agrupados_muertes)</span></code></pre></div>
+<pre><code>##        Mes   Total
+## 1  2020-01     254
+## 2  2020-02    9645
+## 3  2020-03  169353
+## 4  2020-04  783277
+## 5  2020-05  762124
+## 6  2020-06  582743
+## 7  2020-07  652704
+## 8  2020-08  882419
+## 9  2020-09  647771
+## 10 2020-10  648245
+## 11 2020-11 1408864
+## 12 2020-12 1422602
+## 13 2021-01 2056207
+## 14 2021-02 1278927
+## 15 2021-03 1071994
+## 16 2021-04 1400807
+## 17 2021-05 1806116
+## 18 2021-06 1045066
+## 19 2021-07  941080
+## 20 2021-08 1393925
+## 21 2021-09 1000248
+## 22 2021-10 1018702
+## 23 2021-11  867405
+## 24 2021-12  843966
+## 25 2022-01 1132956
+## 26 2022-02 1180801
+## 27 2022-03  738737
+## 28 2022-04  367200
+## 29 2022-05  261842
+## 30 2022-06  161709
+## 31 2022-07  311910
+## 32 2022-08  277670
+## 33 2022-09  193437
+## 34 2022-10  240311
+## 35 2022-11  172093
+## 36 2022-12  247011
+## 37 2023-01  359393
+## 38 2023-02  391301
+## 39 2023-03  113556
+## 40 2023-04  114315
+## 41 2023-05   65454
+## 42 2023-06   35207
+## 43 2023-07   23744
+## 44 2023-08   26800
+## 45 2023-09   37567
+## 46 2023-10   58991
+## 47 2023-11   45930
+## 48 2023-12   76557
+## 49 2024-01   61521
+## 50 2024-02   32761
+## 51 2024-03   23634</code></pre>
+<p>Se da formato de fecha a los datos:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="análisis-exploratorio-de-datos.html#cb32-1" tabindex="-1"></a>datos_agrupados_muertes<span class="sc">$</span>Mes <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(datos_agrupados_muertes<span class="sc">$</span>Mes, <span class="at">format =</span> <span class="st">&quot;%Y-%m&quot;</span>)</span>
+<span id="cb32-2"><a href="análisis-exploratorio-de-datos.html#cb32-2" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="análisis-exploratorio-de-datos.html#cb32-3" tabindex="-1"></a><span class="co"># se establece la fecha de inicio y la frecuencia por meses</span></span>
+<span id="cb32-4"><a href="análisis-exploratorio-de-datos.html#cb32-4" tabindex="-1"></a>indice_muertes.ts<span class="ot">&lt;-</span><span class="fu">ts</span>(datos_agrupados_muertes<span class="sc">$</span>Total,<span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2020</span>,<span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb32-5"><a href="análisis-exploratorio-de-datos.html#cb32-5" tabindex="-1"></a>(indice_muertes.ts)</span></code></pre></div>
+<pre><code>##          Jan     Feb     Mar     Apr     May     Jun     Jul     Aug     Sep
+## 2020     254    9645  169353  783277  762124  582743  652704  882419  647771
+## 2021 2056207 1278927 1071994 1400807 1806116 1045066  941080 1393925 1000248
+## 2022 1132956 1180801  738737  367200  261842  161709  311910  277670  193437
+## 2023  359393  391301  113556  114315   65454   35207   23744   26800   37567
+## 2024   61521   32761   23634                                                
+##          Oct     Nov     Dec
+## 2020  648245 1408864 1422602
+## 2021 1018702  867405  843966
+## 2022  240311  172093  247011
+## 2023   58991   45930   76557
+## 2024</code></pre>
+<p><strong>Promedio móvil simple con ventana de 12 periodos (para una tendencia anual)</strong></p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="análisis-exploratorio-de-datos.html#cb34-1" tabindex="-1"></a>promedio_movil_tendenciaM <span class="ot">&lt;-</span> <span class="fu">rollmean</span>(indice_muertes.ts, <span class="at">k =</span> <span class="dv">12</span>, <span class="at">align =</span> <span class="st">&quot;right&quot;</span>, <span class="at">na.pad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb34-2"><a href="análisis-exploratorio-de-datos.html#cb34-2" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="análisis-exploratorio-de-datos.html#cb34-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">las=</span><span class="dv">1</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb34-4"><a href="análisis-exploratorio-de-datos.html#cb34-4" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="análisis-exploratorio-de-datos.html#cb34-5" tabindex="-1"></a><span class="fu">plot</span>(promedio_movil_tendenciaM, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,<span class="at">main =</span> <span class="st">&quot;Tendencia de promedio móvil Muertes por Covid&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>La tendencia de muertes por covid está incrementandose entre el año 2021 y 2022, a partir de ahí inicia su descenso, es probable que se relacione con un mejor conocimiento sobre el proceso de la enfermedad, el efecto de la vacunación, sin embargo, no es posible afirmarlo solo con los datos con que contamos en este dataset.</p>
+<p><strong>Promedio móvil simple con ventana de 3 periodos (para una estacionalidad trimestral)</strong></p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="análisis-exploratorio-de-datos.html#cb35-1" tabindex="-1"></a>promedio_movil_estacionalidadM <span class="ot">&lt;-</span> <span class="fu">rollmean</span>(indice_muertes.ts, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">align =</span> <span class="st">&quot;right&quot;</span>, <span class="at">na.pad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb35-2"><a href="análisis-exploratorio-de-datos.html#cb35-2" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="análisis-exploratorio-de-datos.html#cb35-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">las=</span><span class="dv">1</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb35-4"><a href="análisis-exploratorio-de-datos.html#cb35-4" tabindex="-1"></a><span class="fu">plot</span>(promedio_movil_estacionalidadM, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;green&quot;</span>,<span class="at">main =</span> <span class="st">&quot;Estacionalidad en Muertes por Covid&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">las =</span> <span class="dv">1</span> )</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p>Al observar la gráfica, no se identifica con claridad una estacionalidad, se calcula autocorrelación:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="análisis-exploratorio-de-datos.html#cb36-1" tabindex="-1"></a><span class="fu">acf</span>(promedio_movil_estacionalidadM, <span class="at">na.action =</span> na.pass)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><em>Líneas Hacia Arriba y Hacia Abajo:</em> Las barras hacia arriba indican autocorrelación positiva en ese retardo, lo que significa que los valores pasados tienen una relación positiva con los valores actuales.
+Las barras hacia abajo indican autocorrelación negativa, lo que significa que los valores pasados tienen una relación negativa con los valores actuales. Similar a la ocurrencia de casos nuevos, En la gráfica de mortalidad se observa barras que empiezan hacia arriba y luego hacia abajo, podría indicar un cambio en el patrón de correlación a medida que aumenta el retardo. Esto puede significar que la relación entre los valores pasados y actuales cambia de positiva a negativa. Los valores negativos que no son significativos probablemente indican ruido o variaciones aleatorias en la serie</p>
+<p><em>Tamaño de las Barras:</em> El tamaño de las barras representa la magnitud de la correlación entre los valores de la serie con un retardo específico. Las barras más altas indican una correlación más fuerte, las cuales se observan hasta el lag 7 sobrepasando las líneas de significancia, esto sugiere que hay una influencia positiva en la serie de tiempo que dura hasta 7 periodos (meses)</p>
+<p><em>Estacionalidad:</em> No se observa un patrón periódico en el gráfico, donde las barras suben y bajan en intervalos regulares, lo que nos confirma la idea de no estacionalidad.</p>
+<p><em>Significancia Estadística:</em> Las líneas punteadas horizontales representan intervalos de confianza. Las barras que sobrepasan estas líneas indican autocorrelación significativa, la cual se presentó al inicio del periodo en los primeros 7 lags, a partir de ahí, la autocorrelación disminuye y ya no es estadísticamente significativa.</p>
+<p><strong>Cálculo del promedio móvil de rezago con ventana de 1 periodo:</strong></p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="análisis-exploratorio-de-datos.html#cb37-1" tabindex="-1"></a>promedio_movil_rezagoM <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">lag</span>(indice_muertes.ts, <span class="dv">1</span>)</span>
+<span id="cb37-2"><a href="análisis-exploratorio-de-datos.html#cb37-2" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="análisis-exploratorio-de-datos.html#cb37-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">las=</span><span class="dv">1</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb37-4"><a href="análisis-exploratorio-de-datos.html#cb37-4" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="análisis-exploratorio-de-datos.html#cb37-5" tabindex="-1"></a><span class="fu">plot</span>(promedio_movil_rezagoM, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>,<span class="at">main =</span> <span class="st">&quot;Rezago en Muertes por Covid&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>Como ya vimos el significado de la gráfica del rezago, se describe a continuación, comparando con la tendencia original de muertes por covid.</p>
+<p>Gráfico de la serie de tiempo original junto con los promedios móviles:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="análisis-exploratorio-de-datos.html#cb38-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)</span>
+<span id="cb38-2"><a href="análisis-exploratorio-de-datos.html#cb38-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">las=</span><span class="dv">1</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>) <span class="co"># Configura el estilo de la etiqueta del eje y en horizontal</span></span>
+<span id="cb38-3"><a href="análisis-exploratorio-de-datos.html#cb38-3" tabindex="-1"></a><span class="fu">plot</span>(indice_muertes.ts, <span class="at">main =</span> <span class="st">&quot;Serie de Tiempo Promedios Móviles de muertes por Covid&quot;</span>,</span>
+<span id="cb38-4"><a href="análisis-exploratorio-de-datos.html#cb38-4" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb38-5"><a href="análisis-exploratorio-de-datos.html#cb38-5" tabindex="-1"></a><span class="fu">lines</span>(promedio_movil_tendenciaM, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>)</span>
+<span id="cb38-6"><a href="análisis-exploratorio-de-datos.html#cb38-6" tabindex="-1"></a><span class="fu">lines</span>(promedio_movil_estacionalidadM, <span class="at">col =</span> <span class="st">&quot;green&quot;</span>)</span>
+<span id="cb38-7"><a href="análisis-exploratorio-de-datos.html#cb38-7" tabindex="-1"></a><span class="fu">lines</span>(promedio_movil_rezagoM, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>)</span>
+<span id="cb38-8"><a href="análisis-exploratorio-de-datos.html#cb38-8" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Serie de Tiempo&quot;</span>, <span class="st">&quot;Promedio Móvil Tendencia&quot;</span>, <span class="st">&quot;Promedio Móvil Estacionalidad&quot;</span>, <span class="st">&quot;Promedio Móvil de Rezago&quot;</span>),</span>
+<span id="cb38-9"><a href="análisis-exploratorio-de-datos.html#cb38-9" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;orange&quot;</span>), <span class="at">lty =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>En la gráfica en conjunto se puede observar en la ocurrencia de muertes por covid se observan tres grandes picos en el año 2021 y uno más pequeño a inicios del año 2022. Aproximadamente a partir del primer trimestre del 2022 se observa una tendencia de disminucion de las muertes por Covid. No se identificó una estacionalidad en la ocurrencia de muertes.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="introducción.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

@@ -4,6 +4,7 @@ author: "GRUPO 6: Maria José Reina Torres, Sonia Yurany Gallego Paz, Juan José
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
+output_dir: "docs"
 documentclass: book
 biblio-style: apalike
 link-citations: yes
@@ -35,11 +36,273 @@ knitr::write_bib(c(
 ```
 
 ```{r}
-# Cargar el archivo 
-covid <- read.csv("C:/Users/Familia GSM/Documents/Data Science/Series de tiempo/owid-covid-data.csv")
-head(covid)
+if (!require("httr")) install.packages("httr")
+library(httr)
+
+# URL para descarga directa
+url <- "https://drive.google.com/uc?export=download&id=1CAfxuMVh2PhdocdOyEH2tzDv2uTykwKi"
+
+# Se descarga y lee el archivo:
+temp <- tempfile()
+download.file(url, temp)
+datos <- read.csv(temp)
+unlink(temp)  # Elimina el archivo temporal
+
+# Primeros datos
+
+head(datos)
 
 ```
 
 
 
+
+# Análisis Exploratorio de datos:
+ 
+ Iniciamos explorando el conjunto de datos seleccionado, identificando tipos de variables y valores nulos o perdidos:
+ 
+## Exploración y preprocesamiento del dataset:
+
+Incialmente se exploró el contenido del dataframe identificando 67 variables con 390659 observaciones de pacientes con diagnóstico de covid desde enero del año 2020 hasta febrero del año 2024. Debido a la extención de esta información, no se presenta el resultado de la función str. 
+
+se continúa con un resumen estadístico que igualmente se decide no presentar dada la extensión de las variables. Llama la atención que se identifica que la variable date está en formato character, se seleccionan solo variables de interés por el momento: date, continent, location, date,new_cases y new_deaths
+
+
+
+```{r}
+
+covid <- datos[, c(2, 3, 4, 6, 9)]
+str(covid)
+
+```
+
+Se confirma que ya están definidas las variables seleccionadas, ahora se estructura en formato fecha la variable date:
+
+```{r}
+covid$date <- as.Date(covid$date, format = "%Y-%m-%d")
+summary(covid)
+```
+
+Se identifica que ya la fecha se encuentra en el formato indicado, iniciando por el 01 de enero de 2020 y terminando el 15 de abril de 2024 (se actualiza con frecuencia). En la variable nuevos casos se identifica que el 50% de los datos corresponden a 0 pacientes y que hay un valor extremo de 44236227, adicionalmente 10.991 NAs. En la variable nuevas muertes, de igual manera el 50% de las fechas hubo 0 muertes, tiene un valor extremo de 103719 y cuenta con 10.668 NAs.
+
+a continuacion se grafican los datos nulos para realizar la repuracion de los casos y muertes en valores NA.
+
+```{r message=FALSE, warning=FALSE}
+library(mice)
+grafico <- md.pattern(covid, rotate.names = TRUE)
+
+```
+
+Se confirma que las dos variables referidas anteriormente contienen datos NA, continente, location y date tienen datos completos.
+
+Según la descripción de las variables en la base de datos original, cuando ocurre un cambio negativo en los datos diarios reportados sobre casos o muertes confirmadas debido a una corrección de datos, en lugar de mostrar un número negativo (lo cual no tendría sentido en este contexto), el valor se establece como "NA" (no disponible) para indicar que la información no está disponible o no es aplicable en esa situación.
+
+En casos excepcionales en los que nuestra fuente de casos y muertes confirmados informa un cambio diario negativo debido a una corrección de datos, configuramos la métrica correspondiente ( new_cases y new_deaths) en NA.
+
+Debido a lo anterior, se decide eliminar los datos como NA dado que no se tuvo información para esas fechas y no tiene sentido aplicar una imputación dado que no corresponden a 0 casos. Sin embargo, solo se eliminan cuando ambas variables contienen NA.
+
+```{r message=FALSE, warning=FALSE}
+covid <- subset(covid, !is.na(new_cases) | !is.na(new_deaths))
+
+library(dplyr)
+
+grafico <- md.pattern(covid, rotate.names = TRUE)
+```
+
+Quedan eliminados las fechas en las cuales hay NA tanto en nuevos casos como en nuevas muertes.
+
+ 
+## Estructura y exploración de datos en serie de tiempo:
+
+Se realiza una agrupacion de los nuevos casos de covid por mes y se calcula la suma de 'valor'
+
+```{r}
+datos_agrupados_casos <- aggregate(new_cases ~ format(date, "%Y-%m"), data = covid, sum)
+
+# Se Renombra la columna resultante
+colnames(datos_agrupados_casos) <- c("Mes", "Total")
+
+print(datos_agrupados_casos)
+```
+
+Se confirma que se realizó la operación y se le asigna formato de fecha a la variable mes, no se utiliza zoo dado que los valores faltantes no son periódicos ni sistemáticos, entonces, al tener los datos NA ya eliminados, se aplica ts:
+
+```{r}
+datos_agrupados_casos$Mes <- as.Date(datos_agrupados_casos$Mes, format = "%Y-%m")
+
+# se establece la fecha de inicio y la frecuencia por meses
+indice_casos.ts<-ts(datos_agrupados_casos$Total,start = c(2020,1), frequency = 12)
+(indice_casos.ts)
+```
+
+**Cálculo de Promedio móvil simple de nuevos casos con ventana de 12 periodos (para una tendencia anual)**:
+
+```{r warning=FALSE}
+library(zoo)
+
+promedio_movil_tendencia <- rollmean(indice_casos.ts, k = 12, align = "right", na.pad = TRUE)
+
+par(las=1, mar = c(5, 8, 4, 2) + 0.1)
+
+plot(promedio_movil_tendencia, type = "l", col = "red",main = "Tendencia de promedio móvil casos nuevos de Covid",xlab = "Fecha", ylab = "", las = 1)
+
+```
+
+En la gráfica se observa que desde el año 2021, la tendencia de nuevos casos de COVID 19 está en aumento con un pico a incio del año 2023, a partir del cual inicia el descenso marcado.
+
+A continuación se calcula el **Promedio móvil simple con ventana de 3 periodos (para una estacionalidad trimestral)**:
+
+```{r}
+promedio_movil_estacionalidad <- rollmean(indice_casos.ts, k = 3, align = "right", na.pad = TRUE)
+
+par(las=1, mar = c(5, 8, 4, 2) + 0.1)
+
+plot(promedio_movil_estacionalidad, type = "l", col = "green",main = "Estacionalidad en casos nuevos de Covid",xlab = "Fecha", ylab = "", las = 1)
+
+```
+
+Con el cálculo del promedio móvil de 3 puntos, cada punto de la gráfica es el promedio de tres puntos consecutivos en la serie de tiempo original. Con align = "right", el promedio móvil se alinea con el último de los tres puntos. Esto ayuda a suavizar la serie, lo que significa que los picos y valles se suavizan para resaltar tendencias subyacentes. Esto es útil para identificar tendencias generales o patrones en la serie de tiempo que podrían no ser evidentes en la serie original, más volátil.
+
+Al observar la gráfica, no se identifican patrones que ocurran en intervalos regulares del tiempo. Se puede calcular autocorrelación para confirmarlo.
+
+```{r}
+# Calcular autocorrelación
+acf(promedio_movil_estacionalidad, na.action = na.pass)
+```
+
+Este grafico muestra los coeficientes de autocorrelación para diferentes retardos (lags) de la serie de tiempo. Interpretación:
+
+_Líneas Hacia Arriba y Hacia Abajo:_ Las barras hacia arriba indican autocorrelación positiva en ese retardo, lo que significa que los valores pasados tienen una relación positiva con los valores actuales.
+Las barras hacia abajo indican autocorrelación negativa, lo que significa que los valores pasados tienen una relación negativa con los valores actuales. En la gráfica se observa barras que empiezan hacia arriba y luego hacia abajo, podría indicar un cambio en el patrón de correlación a medida que aumenta el retardo. Esto puede significar que la relación entre los valores pasados y actuales cambia de positiva a negativa.
+
+_Tamaño de las Barras:_ El tamaño de las barras representa la magnitud de la correlación entre los valores de la serie con un retardo específico. Las barras más altas indican una correlación más fuerte.
+
+_Estacionalidad:_ Si hay un patrón periódico en el gráfico, donde las barras suben y bajan en intervalos regulares, es un indicio de estacionalidad. Eneste caso, no hay un patrón periódico, lo que nos confirma la idea de no estacionalidad.
+
+_Significancia Estadística:_ Las líneas punteadas horizontales representan intervalos de confianza. Las barras que sobrepasan estas líneas indican autocorrelación significativa, la cual se presentó al inicio del periodo solamente.
+
+
+**Cálculo del promedio móvil de rezago con ventana de 1 periodo** 
+
+```{r}
+promedio_movil_rezago <- stats::lag(indice_casos.ts, 1)
+
+par(las=1, mar = c(5, 8, 4, 2) + 0.1)
+plot (promedio_movil_rezago,  type = "l", col = "orange",main = "Rezago en casos nuevos de Covid",xlab = "Fecha", ylab = "", las = 1)
+```
+
+En la gráfica obtenida se encuentra la serie rezagada desplazada a la derecha en comparación con la serie original. En una gráfica posterior se generará una comparación entre la serie rezagada con la original.
+
+Gráfico de la serie de tiempo original junto con los promedios móviles:
+
+```{r}
+
+options(scipen = 999)
+par(las=1, mar = c(5, 8, 4, 2) + 0.1) # Configura el estilo de la etiqueta del eje y en horizontal
+plot(indice_casos.ts, main = "Serie de Tiempo Promedios Móviles casos nuevos por Covid 19",
+     xlab = "Fecha", ylab = "", col = "blue")
+lines(promedio_movil_tendencia, col = "red")
+lines(promedio_movil_estacionalidad, col = "green")
+lines(promedio_movil_rezago, col = "orange")
+legend("topleft", legend = c("Serie de Tiempo", "Promedio Móvil Tendencia", "Promedio Móvil Estacionalidad", "Promedio Móvil de Rezago"),
+       col = c("blue", "red", "green", "orange"), lty = 1)
+```
+
+De acuerdo a la gráfica anterior con promedios móviles de casos de covid, se concluye que el rezago muestra la observación que ocurre antes la observación de la serie de tiempo y se observa un paralelismo en ambos promedios. En la ocurrencia de casos nuevos se observan dos grandes picos a inicios del año 2022, al finalizar el año  2022 y al iniciar el 2023. 
+
+Desde sus inicios hasta el año 2023 la tendencia de casos nuevos por covid estuvo en aumento, apartir de ahí hasta el 2024 se ha observado un descenso. No se identificó estacionalidad.
+
+
+```{r}
+class(indice_casos.ts)
+start(indice_casos.ts)
+end(indice_casos.ts)
+```
+
+A continuación se realiza el mismo proceso exploratorio con los datos de nuevas muertes de covid por mes.
+
+```{r}
+# Agrupar por meses y calcular la suma de 'valor'
+datos_agrupados_muertes <- aggregate(new_deaths ~ format(date, "%Y-%m"), data = covid, sum)
+
+# Renombrar la columna resultante
+colnames(datos_agrupados_muertes) <- c("Mes", "Total")
+
+print(datos_agrupados_muertes)
+```
+
+Se da formato de fecha a los datos:
+
+```{r}
+datos_agrupados_muertes$Mes <- as.Date(datos_agrupados_muertes$Mes, format = "%Y-%m")
+
+# se establece la fecha de inicio y la frecuencia por meses
+indice_muertes.ts<-ts(datos_agrupados_muertes$Total,start = c(2020,1), frequency = 12)
+(indice_muertes.ts)
+```
+
+**Promedio móvil simple con ventana de 12 periodos (para una tendencia anual)**
+```{r}
+promedio_movil_tendenciaM <- rollmean(indice_muertes.ts, k = 12, align = "right", na.pad = TRUE)
+
+par(las=1, mar = c(5, 8, 4, 2) + 0.1)
+
+plot(promedio_movil_tendenciaM, type = "l", col = "red",main = "Tendencia de promedio móvil Muertes por Covid",xlab = "Fecha", ylab = "", las = 1)
+
+```
+
+La tendencia de muertes por covid está incrementandose entre el año 2021 y 2022, a partir de ahí inicia su descenso, es probable que se relacione con un mejor conocimiento sobre el proceso de la enfermedad, el efecto de la vacunación, sin embargo, no es posible afirmarlo solo con los datos con que contamos en este dataset.
+
+**Promedio móvil simple con ventana de 3 periodos (para una estacionalidad trimestral)**
+```{r}
+promedio_movil_estacionalidadM <- rollmean(indice_muertes.ts, k = 3, align = "right", na.pad = TRUE)
+
+par(las=1, mar = c(5, 8, 4, 2) + 0.1)
+plot(promedio_movil_estacionalidadM, type = "l", col = "green",main = "Estacionalidad en Muertes por Covid",xlab = "Fecha", ylab = "", las = 1 )
+
+```
+
+Al observar la gráfica, no se identifica con claridad una estacionalidad, se calcula autocorrelación:
+
+```{r}
+acf(promedio_movil_estacionalidadM, na.action = na.pass)
+```
+
+
+_Líneas Hacia Arriba y Hacia Abajo:_ Las barras hacia arriba indican autocorrelación positiva en ese retardo, lo que significa que los valores pasados tienen una relación positiva con los valores actuales.
+Las barras hacia abajo indican autocorrelación negativa, lo que significa que los valores pasados tienen una relación negativa con los valores actuales. Similar a la ocurrencia de casos nuevos, En la gráfica de mortalidad se observa barras que empiezan hacia arriba y luego hacia abajo, podría indicar un cambio en el patrón de correlación a medida que aumenta el retardo. Esto puede significar que la relación entre los valores pasados y actuales cambia de positiva a negativa. Los valores negativos que no son significativos probablemente indican ruido o variaciones aleatorias en la serie
+
+_Tamaño de las Barras:_ El tamaño de las barras representa la magnitud de la correlación entre los valores de la serie con un retardo específico. Las barras más altas indican una correlación más fuerte, las cuales se observan hasta el lag 7 sobrepasando las líneas de significancia, esto sugiere que hay una influencia positiva en la serie de tiempo que dura hasta 7 periodos (meses)
+
+_Estacionalidad:_ No se observa un patrón periódico en el gráfico, donde las barras suben y bajan en intervalos regulares, lo que nos confirma la idea de no estacionalidad.
+
+_Significancia Estadística:_ Las líneas punteadas horizontales representan intervalos de confianza. Las barras que sobrepasan estas líneas indican autocorrelación significativa, la cual se presentó al inicio del periodo en los primeros 7 lags, a partir de ahí, la autocorrelación disminuye y ya no es estadísticamente significativa.
+
+**Cálculo del promedio móvil de rezago con ventana de 1 periodo:**
+
+```{r}
+promedio_movil_rezagoM <- stats::lag(indice_muertes.ts, 1)
+
+par(las=1, mar = c(5, 8, 4, 2) + 0.1)
+
+plot(promedio_movil_rezagoM, type = "l", col = "orange",main = "Rezago en Muertes por Covid",xlab = "Fecha", ylab = "", las = 1)
+
+```
+
+Como ya vimos el significado de la gráfica del rezago, se describe a continuación, comparando con la tendencia original de muertes por covid.
+
+Gráfico de la serie de tiempo original junto con los promedios móviles:
+
+```{r}
+options(scipen = 999)
+par(las=1, mar = c(5, 8, 4, 2) + 0.1) # Configura el estilo de la etiqueta del eje y en horizontal
+plot(indice_muertes.ts, main = "Serie de Tiempo Promedios Móviles de muertes por Covid",
+     xlab = "Fecha", ylab = "", col = "blue")
+lines(promedio_movil_tendenciaM, col = "red")
+lines(promedio_movil_estacionalidadM, col = "green")
+lines(promedio_movil_rezagoM, col = "orange")
+legend("topright", legend = c("Serie de Tiempo", "Promedio Móvil Tendencia", "Promedio Móvil Estacionalidad", "Promedio Móvil de Rezago"),
+       col = c("blue", "red", "green", "orange"), lty = 1)
+```
+
+En la gráfica en conjunto se puede observar en la ocurrencia de muertes por covid se observan tres grandes picos en el año 2021 y uno más pequeño a inicios del año 2022. Aproximadamente a partir del primer trimestre del 2022 se observa una tendencia de disminucion de las muertes por Covid. No se identificó una estacionalidad en la ocurrencia de muertes.
