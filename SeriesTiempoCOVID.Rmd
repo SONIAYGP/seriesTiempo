@@ -14,8 +14,10 @@ description: "Se incluye un análisis de series de tiempo con datos relacionados
 
 # Introducción:
 
- La base de datos owid-covid-data es una colección de datos de COVID-19 mantenidos por Our World in Data.Los datos que encuentra aquí son los casos confirmados y muertes, estos datos se recopilan del Panel de control de coronavirus de la Organización Mundial de la Salud, el conjunto de datos de casos y muertes se actualiza diariamente.
+ La base de datos owid-covid-data es una colección de datos de COVID-19 mantenidos por Our World in Data. Los datos que encuentra aquí son los casos confirmados y muertes, estos datos se recopilan del Panel de control de coronavirus de la Organización Mundial de la Salud, el conjunto de datos de casos y muertes se actualiza diariamente.
+ 
 Nota 1: Las marcas de hora y fecha reflejan cuándo la OMS actualizó los datos por última vez. Debido al tiempo necesario para procesar y validar los datos entrantes, hay un retraso entre la presentación de informes a la OMS y la actualización del tablero.
+
 Nota 2: Los recuentos y las correcciones realizadas después de estos tiempos se trasladarán al siguiente ciclo de informes para esa región específica. El retraso en la presentación de informes para cualquier país, territorio o área específica puede dar lugar a que se presenten recuentos agrupados de varios días, con una actualización retrospectiva de los recuentos de días anteriores para reflejar con precisión las tendencias. Los errores importantes en los datos detectados o notificados a la OMS podrán corregirse a intervalos más frecuentes.
 
 Fuente: <https://github.com/owid/covid-19-data/tree/master/public/data>
@@ -44,13 +46,15 @@ url <- "https://drive.google.com/uc?export=download&id=1CAfxuMVh2PhdocdOyEH2tzDv
 
 # Se descarga y lee el archivo:
 temp <- tempfile()
+
+options(timeout = 300)
 download.file(url, temp)
 datos <- read.csv(temp)
 unlink(temp)  # Elimina el archivo temporal
 
 # Primeros datos
 
-head(datos)
+head(datos, 10)
 
 ```
 
@@ -63,7 +67,7 @@ head(datos)
  
 ## Exploración y preprocesamiento del dataset:
 
-Incialmente se exploró el contenido del dataframe identificando 67 variables con 390659 observaciones de pacientes con diagnóstico de covid desde enero del año 2020 hasta febrero del año 2024. Debido a la extención de esta información, no se presenta el resultado de la función str. 
+Inicialmente se exploró el contenido del dataframe identificando 67 variables con 390659 observaciones de pacientes con diagnóstico de covid desde enero del año 2020 hasta febrero del año 2024. Debido a la extensión de esta información, no se presenta el resultado de la función str. 
 
 se continúa con un resumen estadístico que igualmente se decide no presentar dada la extensión de las variables. Llama la atención que se identifica que la variable date está en formato character, se seleccionan solo variables de interés por el momento: date, continent, location, date,new_cases y new_deaths
 
@@ -85,7 +89,7 @@ summary(covid)
 
 Se identifica que ya la fecha se encuentra en el formato indicado, iniciando por el 01 de enero de 2020 y terminando el 15 de abril de 2024 (se actualiza con frecuencia). En la variable nuevos casos se identifica que el 50% de los datos corresponden a 0 pacientes y que hay un valor extremo de 44236227, adicionalmente 10.991 NAs. En la variable nuevas muertes, de igual manera el 50% de las fechas hubo 0 muertes, tiene un valor extremo de 103719 y cuenta con 10.668 NAs.
 
-a continuacion se grafican los datos nulos para realizar la repuracion de los casos y muertes en valores NA.
+a continuación se grafican los datos nulos para realizar la depuración de los casos y muertes en valores NA.
 
 ```{r message=FALSE, warning=FALSE}
 library(mice)
@@ -114,7 +118,7 @@ Quedan eliminados las fechas en las cuales hay NA tanto en nuevos casos como en 
  
 ## Estructura y exploración de datos en serie de tiempo:
 
-Se realiza una agrupacion de los nuevos casos de covid por mes y se calcula la suma de 'valor'
+Se realiza una agrupación de los nuevos casos de covid por mes y se calcula la suma de 'valor'
 
 ```{r}
 datos_agrupados_casos <- aggregate(new_cases ~ format(date, "%Y-%m"), data = covid, sum)
@@ -144,11 +148,13 @@ promedio_movil_tendencia <- rollmean(indice_casos.ts, k = 12, align = "right", n
 
 par(las=1, mar = c(5, 8, 4, 2) + 0.1)
 
+options(scipen = 999)  # Desactivar la notación científica
+
 plot(promedio_movil_tendencia, type = "l", col = "red",main = "Tendencia de promedio móvil casos nuevos de Covid",xlab = "Fecha", ylab = "", las = 1)
 
 ```
 
-En la gráfica se observa que desde el año 2021, la tendencia de nuevos casos de COVID 19 está en aumento con un pico a incio del año 2023, a partir del cual inicia el descenso marcado.
+En la gráfica se observa que desde el año 2021, la tendencia de nuevos casos de COVID 19 está en aumento con un pico a inicio del año 2023, a partir del cual inicia el descenso marcado.
 
 A continuación se calcula el **Promedio móvil simple con ventana de 3 periodos (para una estacionalidad trimestral)**:
 
@@ -177,7 +183,7 @@ Las barras hacia abajo indican autocorrelación negativa, lo que significa que l
 
 _Tamaño de las Barras:_ El tamaño de las barras representa la magnitud de la correlación entre los valores de la serie con un retardo específico. Las barras más altas indican una correlación más fuerte.
 
-_Estacionalidad:_ Si hay un patrón periódico en el gráfico, donde las barras suben y bajan en intervalos regulares, es un indicio de estacionalidad. Eneste caso, no hay un patrón periódico, lo que nos confirma la idea de no estacionalidad.
+_Estacionalidad:_ Si hay un patrón periódico en el gráfico, donde las barras suben y bajan en intervalos regulares, es un indicio de estacionalidad. En este caso, no hay un patrón periódico, lo que nos confirma la idea de no estacionalidad.
 
 _Significancia Estadística:_ Las líneas punteadas horizontales representan intervalos de confianza. Las barras que sobrepasan estas líneas indican autocorrelación significativa, la cual se presentó al inicio del periodo solamente.
 
@@ -210,7 +216,7 @@ legend("topleft", legend = c("Serie de Tiempo", "Promedio Móvil Tendencia", "Pr
 
 De acuerdo a la gráfica anterior con promedios móviles de casos de covid, se concluye que el rezago muestra la observación que ocurre antes la observación de la serie de tiempo y se observa un paralelismo en ambos promedios. En la ocurrencia de casos nuevos se observan dos grandes picos a inicios del año 2022, al finalizar el año  2022 y al iniciar el 2023. 
 
-Desde sus inicios hasta el año 2023 la tendencia de casos nuevos por covid estuvo en aumento, apartir de ahí hasta el 2024 se ha observado un descenso. No se identificó estacionalidad.
+Desde sus inicios hasta el año 2023 la tendencia de casos nuevos por covid estuvo en aumento, a partir de ahí hasta el 2024 se ha observado un descenso. No se identificó estacionalidad.
 
 
 ```{r}
@@ -251,7 +257,7 @@ plot(promedio_movil_tendenciaM, type = "l", col = "red",main = "Tendencia de pro
 
 ```
 
-La tendencia de muertes por covid está incrementandose entre el año 2021 y 2022, a partir de ahí inicia su descenso, es probable que se relacione con un mejor conocimiento sobre el proceso de la enfermedad, el efecto de la vacunación, sin embargo, no es posible afirmarlo solo con los datos con que contamos en este dataset.
+La tendencia de muertes por covid está incrementándose entre el año 2021 y 2022, a partir de ahí inicia su descenso, es probable que se relacione con un mejor conocimiento sobre el proceso de la enfermedad, el efecto de la vacunación, sin embargo, no es posible afirmarlo solo con los datos con que contamos en este dataset.
 
 **Promedio móvil simple con ventana de 3 periodos (para una estacionalidad trimestral)**
 ```{r}
@@ -305,4 +311,145 @@ legend("topright", legend = c("Serie de Tiempo", "Promedio Móvil Tendencia", "P
        col = c("blue", "red", "green", "orange"), lty = 1)
 ```
 
-En la gráfica en conjunto se puede observar en la ocurrencia de muertes por covid se observan tres grandes picos en el año 2021 y uno más pequeño a inicios del año 2022. Aproximadamente a partir del primer trimestre del 2022 se observa una tendencia de disminucion de las muertes por Covid. No se identificó una estacionalidad en la ocurrencia de muertes.
+En la gráfica en conjunto se puede observar en la ocurrencia de muertes por covid se observan tres grandes picos en el año 2021 y uno más pequeño a inicios del año 2022. Aproximadamente a partir del primer trimestre del 2022 se observa una tendencia de disminución de las muertes por Covid. No se identificó una estacionalidad en la ocurrencia de muertes.
+
+# Descomposición de la serie de tiempo.
+
+**Descomposición:**
+
+Se descompone  la serie de tiempo en sus componentes de tendencia, estacionalidad y error. Esto es útil para entender mejor la estructura de la serie y analizar patrones subyacentes.
+
+En este caso, se puede utilizar la función  decompose dado que los datos sean regulares (intervalos uniformes mensuales) y se estableció la frecuencia de 12 para datos mensuales.
+
+Se utilizarán los datos de casos nuevos de Covid 19.
+
+```{r}
+covidcomp <- decompose(indice_casos.ts)
+plot(covidcomp)
+```
+
+En la primera gráfica se observa la serie original como se había descrito anteriormente.
+
+En la segunda gráfica (Trend) observamos la tendencia de los casos nuevos de covid en el tiempo, una línea suavizada que representa el movimiento general a largo plazo.
+
+La tercera gráfica (seasonal) vemos la estacionalidad, muestra el patrón repetitivo que ocurre en intervalos regulares. A diferencia de la primera gráfica generada, en esta descomposición sí parece que existiera un patrón con picos a inicio de cada año y un pequeño incremento en la mitad del año.
+
+Y en la última gráfica (random) Ruido, se muestra el residuo que queda después de eliminar tendencia y estacionalidad. Representa variaciones aleatorias o ruido en los datos. Idealmente, debería parecer una línea plana alrededor de cero si la descomposición es adecuada, sin embargo, se observa con claridad que no hay una línea plana y que en el año 2021, hay una disminución, mientras que en el año 2022 y 2023 hay picos.
+
+
+**Estacionariedad:**
+
+La estacionariedad es una propiedad de los datos en la que sus características estadísticas, como la media, la varianza y la autocorrelación, se mantienen constantes a lo largo del tiempo. Esta es una propiedad importante para muchos métodos de análisis y modelado de series temporales.
+
+Una serie estacionaria tiene media constante, varianza constante y autocorrelación constante. Con datos estacionarios se facilita el modelado, pues algunos modelos como el ARIMA asumen que los datos son estacionarios, se mejora el pronóstico y la identificación de patrones.
+
+Para verificar la estacionariedad en los datos de casos nuevos por COVID 19, se utilizará la prueba de Dickey-Fuller aumentado (ADF). El paquete aTSA proporciona una implementación de esta prueba.
+
+```{r message=FALSE, warning=FALSE}
+library(tseries)
+covid_adf <- adf.test(indice_casos.ts)
+print (covid_adf)
+```
+
+El valor p es 0.4587, indica que no hay suficiente evidencia para rechazar la hipótesis nula de que la serie no es estacionaria, en estos casos, se requeriría transformar o diferenciar los datos para que sean estacionarios.
+
+Para ello se podría diferenciar la serie de datos, tomar diferencias sucesivas de la serie para convertirla en estacionaria.
+
+```{r warning=FALSE}
+covid_ts_diff <- diff(indice_casos.ts)
+
+#Y se repite la prueba para verificar si funcionó la diferenciación y la serie ahora es estacionaria
+
+covid_adf <- adf.test(covid_ts_diff)
+print (covid_adf)
+
+```
+Ahora se obtiene un valor p menor de 0.01, indica que ya es posible rechazar la hipótesis nula y concluir que la serie es estacionaria después de la primera diferenciación.
+
+Con esta variable diferenciada, es posible proceder con un análisis o modelado asumiendo que los datos son estacionarios. Se pueden emplear modelos de serie de tiempo como ARIMA, que requieren estacionariedad.
+
+Adicionalmente, previo al uso de ARIMA, se aplicarán las funciones acf (Autocorrelation Function) y pacf (Partial Autocorrelation Function) para examinar las relaciones entre los valores de la serie en diferentes retardos (lags). Estas dos funciones son herramientas clave para entender patrones y seleccionar modelos de series temporales, como ARIMA.
+
+```{r}
+covidcompDiff <- decompose(covid_ts_diff)
+plot(covidcompDiff)
+```
+
+En la gráfica anterior identificamos que después de diferenciar los datos, se observa que cambia la tendencia, se mantiene un patrón en la estacionalidad y el ruido sigue presentando picos.
+
+Se procede a realizar una segunda diferenciación, dado que a veces, una única diferenciación no es suficiente:
+
+```{r}
+covid_ts_diff2 <- diff(covid_ts_diff)
+
+covidcompDiff2 <- decompose(covid_ts_diff2)
+plot(covidcompDiff2)
+
+```
+
+Con la segunda diferenciación, el ruido se mantiene. A continuación, se realiza una transformación Box Cox para estabilizar la varianza.
+
+```{r}
+library(forecast)
+# Encontrar el valor óptimo de lambda para la transformación de Box-Cox
+lambda_optimo <- BoxCox.lambda(indice_casos.ts)
+
+covid_boxcox <- BoxCox(indice_casos.ts, lambda = lambda_optimo)
+
+```
+
+Con los datos transformados, se realiza una nueva descomposición:
+
+```{r}
+covidBox <- decompose(covid_boxcox)
+plot(covidBox)
+```
+
+Se raliza cálculo de Dickey Fuller para evaluar si hay estacionariedad con los datos transformados mediante Boxcox
+
+```{r}
+covid_adfBox <- adf.test(covid_boxcox)
+print (covid_adfBox)
+```
+
+El resultado de la prueba Dickey-Fuller  con los datos transformados conBoxCox indica que el valor p = 0.6268 es mayor que el umbral de significancia, lo que significa que rechazamos la hipótesis nula de que la serie no es estacionaria. 
+
+En Resumen, con la transformación Box Cox, se redujo el Random, pero no se mejora la estacionariedad.
+
+
+**Nota:**
+
+Al encontrar que no había estacionariedad, se realizó una diferenciación de los datos, logrando después de ello la estacionariedad comprobada con la prueba estadística Dickey-Fuller, no obstante, al descomponer de nuevo, se sigue presentando alta variación en el random. 
+
+Para mejorar esta variación se realizó una segunda diferenciación, la cual se mantuvo con alta variación en Random.
+
+Se realizó una transformación Box Cox, posterior a la cual los observados y las tendencias se suavizan, el random tuvo menos variaciones pero sin estacionariedad.
+
+De acuerdo a lo anterior, se calculan las funciones de autocorrelación con los datos diferenciados una vez.
+
+
+**ACF: Función de Autocorrelación**
+
+Mide la correlación entre la serie original y versiones desplazadas (lags) de sí misma. Los valores en el gráfico muestran la correlación total entre la serie y los valores en retardos específicos, los ACF pueden ayudar a determinar el orden de los componentes MA en un modelo ARIMA.
+
+```{r}
+acf(covid_ts_diff)
+
+```
+
+Los picos que sobresalen de las líneas de significancia sugieren retardos con autocorrelación significativa. En este caso, solo se observan dos picos, uno al inicio y otro en el lag 0.9.
+
+
+**PACF: Función de Autocorrelación Parcial**
+
+Mide la correlación entre una serie y sus retardos eliminando la influencia de los retardos intermedios. Los valores significativos en el gráfico PACF sugieren el orden de los componentes AR en un modelo ARIMA.
+
+```{r}
+pacf(covid_ts_diff)
+
+```
+
+Todos los picos en el gráfico de PACF están dentro de las líneas de significancia, generalmente indica que no hay autocorrelaciones parciales significativas entre la serie de tiempo y sus retardos. Esto sugiere que la serie no tiene un fuerte componente autorregresivo, al menos en los retardos observados. Si ningún pico sobresale de las líneas de significancia, el componente AR del modelo ARIMA puede ser insignificante. Esto significa que la serie probablemente no tiene una fuerte dependencia autorregresiva, es decir que los valores pasados de la serie no están influyendo significativamente en los valores actuales, que la serie se comporta de forma más aleatoria y no sigue patrones claros que se puedan identificar fácilmente a partir de los valores pasados.
+
+Con lo anterior, Los modelos autorregresivos (AR) no serían útiles para modelar la serie. En este caso, se podrían examinar otras características de la serie. Como el ACF muestra picos significativos, es posible que un modelo MA sea más apropiado, también se podría considerar modelos más complejos como SARIMA.
+
