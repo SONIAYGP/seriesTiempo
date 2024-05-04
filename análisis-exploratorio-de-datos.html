@@ -23,7 +23,7 @@
 <meta name="author" content="GRUPO 6: Maria José Reina Torres, Sonia Yurany Gallego Paz, Juan José León Tabares" />
 
 
-<meta name="date" content="2024-05-02" />
+<meta name="date" content="2024-05-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="introducción.html"/>
-
+<link rel="next" href="descomposición-de-la-serie-de-tiempo..html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -142,6 +142,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#exploración-y-preprocesamiento-del-dataset"><i class="fa fa-check"></i><b>2.1</b> Exploración y preprocesamiento del dataset:</a></li>
 <li class="chapter" data-level="2.2" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#estructura-y-exploración-de-datos-en-serie-de-tiempo"><i class="fa fa-check"></i><b>2.2</b> Estructura y exploración de datos en serie de tiempo:</a></li>
 </ul></li>
+<li class="chapter" data-level="3" data-path="descomposición-de-la-serie-de-tiempo..html"><a href="descomposición-de-la-serie-de-tiempo..html"><i class="fa fa-check"></i><b>3</b> Descomposición de la serie de tiempo.</a></li>
 </ul>
 
       </nav>
@@ -164,7 +165,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Iniciamos explorando el conjunto de datos seleccionado, identificando tipos de variables y valores nulos o perdidos:</p>
 <div id="exploración-y-preprocesamiento-del-dataset" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> Exploración y preprocesamiento del dataset:<a href="análisis-exploratorio-de-datos.html#exploración-y-preprocesamiento-del-dataset" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Incialmente se exploró el contenido del dataframe identificando 67 variables con 390659 observaciones de pacientes con diagnóstico de covid desde enero del año 2020 hasta febrero del año 2024. Debido a la extención de esta información, no se presenta el resultado de la función str.</p>
+<p>Inicialmente se exploró el contenido del dataframe identificando 67 variables con 390659 observaciones de pacientes con diagnóstico de covid desde enero del año 2020 hasta febrero del año 2024. Debido a la extensión de esta información, no se presenta el resultado de la función str.</p>
 <p>se continúa con un resumen estadístico que igualmente se decide no presentar dada la extensión de las variables. Llama la atención que se identifica que la variable date está en formato character, se seleccionan solo variables de interés por el momento: date, continent, location, date,new_cases y new_deaths</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="análisis-exploratorio-de-datos.html#cb6-1" tabindex="-1"></a>covid <span class="ot">&lt;-</span> datos[, <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">9</span>)]</span>
 <span id="cb6-2"><a href="análisis-exploratorio-de-datos.html#cb6-2" tabindex="-1"></a><span class="fu">str</span>(covid)</span></code></pre></div>
@@ -194,7 +195,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  Max.   :103719.00  
 ##  NA&#39;s   :10668</code></pre>
 <p>Se identifica que ya la fecha se encuentra en el formato indicado, iniciando por el 01 de enero de 2020 y terminando el 15 de abril de 2024 (se actualiza con frecuencia). En la variable nuevos casos se identifica que el 50% de los datos corresponden a 0 pacientes y que hay un valor extremo de 44236227, adicionalmente 10.991 NAs. En la variable nuevas muertes, de igual manera el 50% de las fechas hubo 0 muertes, tiene un valor extremo de 103719 y cuenta con 10.668 NAs.</p>
-<p>a continuacion se grafican los datos nulos para realizar la repuracion de los casos y muertes en valores NA.</p>
+<p>a continuación se grafican los datos nulos para realizar la depuración de los casos y muertes en valores NA.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="análisis-exploratorio-de-datos.html#cb10-1" tabindex="-1"></a><span class="fu">library</span>(mice)</span>
 <span id="cb10-2"><a href="análisis-exploratorio-de-datos.html#cb10-2" tabindex="-1"></a>grafico <span class="ot">&lt;-</span> <span class="fu">md.pattern</span>(covid, <span class="at">rotate.names =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
@@ -212,7 +213,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="estructura-y-exploración-de-datos-en-serie-de-tiempo" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> Estructura y exploración de datos en serie de tiempo:<a href="análisis-exploratorio-de-datos.html#estructura-y-exploración-de-datos-en-serie-de-tiempo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Se realiza una agrupacion de los nuevos casos de covid por mes y se calcula la suma de ‘valor’</p>
+<p>Se realiza una agrupación de los nuevos casos de covid por mes y se calcula la suma de ‘valor’</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="análisis-exploratorio-de-datos.html#cb12-1" tabindex="-1"></a>datos_agrupados_casos <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(new_cases <span class="sc">~</span> <span class="fu">format</span>(date, <span class="st">&quot;%Y-%m&quot;</span>), <span class="at">data =</span> covid, sum)</span>
 <span id="cb12-2"><a href="análisis-exploratorio-de-datos.html#cb12-2" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="análisis-exploratorio-de-datos.html#cb12-3" tabindex="-1"></a><span class="co"># Se Renombra la columna resultante</span></span>
@@ -300,9 +301,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb19-2"><a href="análisis-exploratorio-de-datos.html#cb19-2" tabindex="-1"></a></span>
 <span id="cb19-3"><a href="análisis-exploratorio-de-datos.html#cb19-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">las=</span><span class="dv">1</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
 <span id="cb19-4"><a href="análisis-exploratorio-de-datos.html#cb19-4" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="análisis-exploratorio-de-datos.html#cb19-5" tabindex="-1"></a><span class="fu">plot</span>(promedio_movil_tendencia, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,<span class="at">main =</span> <span class="st">&quot;Tendencia de promedio móvil casos nuevos de Covid&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
+<span id="cb19-5"><a href="análisis-exploratorio-de-datos.html#cb19-5" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)  <span class="co"># Desactivar la notación científica</span></span>
+<span id="cb19-6"><a href="análisis-exploratorio-de-datos.html#cb19-6" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="análisis-exploratorio-de-datos.html#cb19-7" tabindex="-1"></a><span class="fu">plot</span>(promedio_movil_tendencia, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,<span class="at">main =</span> <span class="st">&quot;Tendencia de promedio móvil casos nuevos de Covid&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>En la gráfica se observa que desde el año 2021, la tendencia de nuevos casos de COVID 19 está en aumento con un pico a incio del año 2023, a partir del cual inicia el descenso marcado.</p>
+<p>En la gráfica se observa que desde el año 2021, la tendencia de nuevos casos de COVID 19 está en aumento con un pico a inicio del año 2023, a partir del cual inicia el descenso marcado.</p>
 <p>A continuación se calcula el <strong>Promedio móvil simple con ventana de 3 periodos (para una estacionalidad trimestral)</strong>:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="análisis-exploratorio-de-datos.html#cb20-1" tabindex="-1"></a>promedio_movil_estacionalidad <span class="ot">&lt;-</span> <span class="fu">rollmean</span>(indice_casos.ts, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">align =</span> <span class="st">&quot;right&quot;</span>, <span class="at">na.pad =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb20-2"><a href="análisis-exploratorio-de-datos.html#cb20-2" tabindex="-1"></a></span>
@@ -319,7 +322,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><em>Líneas Hacia Arriba y Hacia Abajo:</em> Las barras hacia arriba indican autocorrelación positiva en ese retardo, lo que significa que los valores pasados tienen una relación positiva con los valores actuales.
 Las barras hacia abajo indican autocorrelación negativa, lo que significa que los valores pasados tienen una relación negativa con los valores actuales. En la gráfica se observa barras que empiezan hacia arriba y luego hacia abajo, podría indicar un cambio en el patrón de correlación a medida que aumenta el retardo. Esto puede significar que la relación entre los valores pasados y actuales cambia de positiva a negativa.</p>
 <p><em>Tamaño de las Barras:</em> El tamaño de las barras representa la magnitud de la correlación entre los valores de la serie con un retardo específico. Las barras más altas indican una correlación más fuerte.</p>
-<p><em>Estacionalidad:</em> Si hay un patrón periódico en el gráfico, donde las barras suben y bajan en intervalos regulares, es un indicio de estacionalidad. Eneste caso, no hay un patrón periódico, lo que nos confirma la idea de no estacionalidad.</p>
+<p><em>Estacionalidad:</em> Si hay un patrón periódico en el gráfico, donde las barras suben y bajan en intervalos regulares, es un indicio de estacionalidad. En este caso, no hay un patrón periódico, lo que nos confirma la idea de no estacionalidad.</p>
 <p><em>Significancia Estadística:</em> Las líneas punteadas horizontales representan intervalos de confianza. Las barras que sobrepasan estas líneas indican autocorrelación significativa, la cual se presentó al inicio del periodo solamente.</p>
 <p><strong>Cálculo del promedio móvil de rezago con ventana de 1 periodo</strong></p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="análisis-exploratorio-de-datos.html#cb22-1" tabindex="-1"></a>promedio_movil_rezago <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">lag</span>(indice_casos.ts, <span class="dv">1</span>)</span>
@@ -340,7 +343,7 @@ Las barras hacia abajo indican autocorrelación negativa, lo que significa que l
 <span id="cb23-9"><a href="análisis-exploratorio-de-datos.html#cb23-9" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;orange&quot;</span>), <span class="at">lty =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>De acuerdo a la gráfica anterior con promedios móviles de casos de covid, se concluye que el rezago muestra la observación que ocurre antes la observación de la serie de tiempo y se observa un paralelismo en ambos promedios. En la ocurrencia de casos nuevos se observan dos grandes picos a inicios del año 2022, al finalizar el año 2022 y al iniciar el 2023.</p>
-<p>Desde sus inicios hasta el año 2023 la tendencia de casos nuevos por covid estuvo en aumento, apartir de ahí hasta el 2024 se ha observado un descenso. No se identificó estacionalidad.</p>
+<p>Desde sus inicios hasta el año 2023 la tendencia de casos nuevos por covid estuvo en aumento, a partir de ahí hasta el 2024 se ha observado un descenso. No se identificó estacionalidad.</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="análisis-exploratorio-de-datos.html#cb24-1" tabindex="-1"></a><span class="fu">class</span>(indice_casos.ts)</span></code></pre></div>
 <pre><code>## [1] &quot;ts&quot;</code></pre>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="análisis-exploratorio-de-datos.html#cb26-1" tabindex="-1"></a><span class="fu">start</span>(indice_casos.ts)</span></code></pre></div>
@@ -432,7 +435,7 @@ Las barras hacia abajo indican autocorrelación negativa, lo que significa que l
 <span id="cb34-4"><a href="análisis-exploratorio-de-datos.html#cb34-4" tabindex="-1"></a></span>
 <span id="cb34-5"><a href="análisis-exploratorio-de-datos.html#cb34-5" tabindex="-1"></a><span class="fu">plot</span>(promedio_movil_tendenciaM, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,<span class="at">main =</span> <span class="st">&quot;Tendencia de promedio móvil Muertes por Covid&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>, <span class="at">las =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
-<p>La tendencia de muertes por covid está incrementandose entre el año 2021 y 2022, a partir de ahí inicia su descenso, es probable que se relacione con un mejor conocimiento sobre el proceso de la enfermedad, el efecto de la vacunación, sin embargo, no es posible afirmarlo solo con los datos con que contamos en este dataset.</p>
+<p>La tendencia de muertes por covid está incrementándose entre el año 2021 y 2022, a partir de ahí inicia su descenso, es probable que se relacione con un mejor conocimiento sobre el proceso de la enfermedad, el efecto de la vacunación, sin embargo, no es posible afirmarlo solo con los datos con que contamos en este dataset.</p>
 <p><strong>Promedio móvil simple con ventana de 3 periodos (para una estacionalidad trimestral)</strong></p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="análisis-exploratorio-de-datos.html#cb35-1" tabindex="-1"></a>promedio_movil_estacionalidadM <span class="ot">&lt;-</span> <span class="fu">rollmean</span>(indice_muertes.ts, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">align =</span> <span class="st">&quot;right&quot;</span>, <span class="at">na.pad =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb35-2"><a href="análisis-exploratorio-de-datos.html#cb35-2" tabindex="-1"></a></span>
@@ -466,7 +469,7 @@ Las barras hacia abajo indican autocorrelación negativa, lo que significa que l
 <span id="cb38-8"><a href="análisis-exploratorio-de-datos.html#cb38-8" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Serie de Tiempo&quot;</span>, <span class="st">&quot;Promedio Móvil Tendencia&quot;</span>, <span class="st">&quot;Promedio Móvil Estacionalidad&quot;</span>, <span class="st">&quot;Promedio Móvil de Rezago&quot;</span>),</span>
 <span id="cb38-9"><a href="análisis-exploratorio-de-datos.html#cb38-9" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;orange&quot;</span>), <span class="at">lty =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
-<p>En la gráfica en conjunto se puede observar en la ocurrencia de muertes por covid se observan tres grandes picos en el año 2021 y uno más pequeño a inicios del año 2022. Aproximadamente a partir del primer trimestre del 2022 se observa una tendencia de disminucion de las muertes por Covid. No se identificó una estacionalidad en la ocurrencia de muertes.</p>
+<p>En la gráfica en conjunto se puede observar en la ocurrencia de muertes por covid se observan tres grandes picos en el año 2021 y uno más pequeño a inicios del año 2022. Aproximadamente a partir del primer trimestre del 2022 se observa una tendencia de disminución de las muertes por Covid. No se identificó una estacionalidad en la ocurrencia de muertes.</p>
 </div>
 </div>
             </section>
@@ -474,8 +477,8 @@ Las barras hacia abajo indican autocorrelación negativa, lo que significa que l
           </div>
         </div>
       </div>
-<a href="introducción.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="introducción.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="descomposición-de-la-serie-de-tiempo..html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 Descomposición de la serie de tiempo. | Análisis de Series de Tiempo relacionados con COVID19</title>
+  <meta name="description" content="Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024" />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 Descomposición de la serie de tiempo. | Análisis de Series de Tiempo relacionados con COVID19" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024" />
+  <meta name="github-repo" content="Familia GSMSciencede tiempo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 Descomposición de la serie de tiempo. | Análisis de Series de Tiempo relacionados con COVID19" />
+  
+  <meta name="twitter:description" content="Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024" />
+  
+
+<meta name="author" content="GRUPO 6: Maria José Reina Torres, Sonia Yurany Gallego Paz, Juan José León Tabares" />
+
+
+<meta name="date" content="2024-05-04" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="análisis-exploratorio-de-datos.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="introducción.html"><a href="introducción.html"><i class="fa fa-check"></i><b>1</b> Introducción:</a></li>
+<li class="chapter" data-level="2" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html"><i class="fa fa-check"></i><b>2</b> Análisis Exploratorio de datos:</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#exploración-y-preprocesamiento-del-dataset"><i class="fa fa-check"></i><b>2.1</b> Exploración y preprocesamiento del dataset:</a></li>
+<li class="chapter" data-level="2.2" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#estructura-y-exploración-de-datos-en-serie-de-tiempo"><i class="fa fa-check"></i><b>2.2</b> Estructura y exploración de datos en serie de tiempo:</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="descomposición-de-la-serie-de-tiempo..html"><a href="descomposición-de-la-serie-de-tiempo..html"><i class="fa fa-check"></i><b>3</b> Descomposición de la serie de tiempo.</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis de Series de Tiempo relacionados con COVID19</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="descomposición-de-la-serie-de-tiempo." class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">3</span> Descomposición de la serie de tiempo.<a href="descomposición-de-la-serie-de-tiempo..html#descomposición-de-la-serie-de-tiempo." class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><strong>Descomposición:</strong></p>
+<p>Se descompone la serie de tiempo en sus componentes de tendencia, estacionalidad y error. Esto es útil para entender mejor la estructura de la serie y analizar patrones subyacentes.</p>
+<p>En este caso, se puede utilizar la función decompose dado que los datos sean regulares (intervalos uniformes mensuales) y se estableció la frecuencia de 12 para datos mensuales.</p>
+<p>Se utilizarán los datos de casos nuevos de Covid 19.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb39-1" tabindex="-1"></a>covidcomp <span class="ot">&lt;-</span> <span class="fu">decompose</span>(indice_casos.ts)</span>
+<span id="cb39-2"><a href="descomposición-de-la-serie-de-tiempo..html#cb39-2" tabindex="-1"></a><span class="fu">plot</span>(covidcomp)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>En la primera gráfica se observa la serie original como se había descrito anteriormente.</p>
+<p>En la segunda gráfica (Trend) observamos la tendencia de los casos nuevos de covid en el tiempo, una línea suavizada que representa el movimiento general a largo plazo.</p>
+<p>La tercera gráfica (seasonal) vemos la estacionalidad, muestra el patrón repetitivo que ocurre en intervalos regulares. A diferencia de la primera gráfica generada, en esta descomposición sí parece que existiera un patrón con picos a inicio de cada año y un pequeño incremento en la mitad del año.</p>
+<p>Y en la última gráfica (random) Ruido, se muestra el residuo que queda después de eliminar tendencia y estacionalidad. Representa variaciones aleatorias o ruido en los datos. Idealmente, debería parecer una línea plana alrededor de cero si la descomposición es adecuada, sin embargo, se observa con claridad que no hay una línea plana y que en el año 2021, hay una disminución, mientras que en el año 2022 y 2023 hay picos.</p>
+<p><strong>Estacionariedad:</strong></p>
+<p>La estacionariedad es una propiedad de los datos en la que sus características estadísticas, como la media, la varianza y la autocorrelación, se mantienen constantes a lo largo del tiempo. Esta es una propiedad importante para muchos métodos de análisis y modelado de series temporales.</p>
+<p>Una serie estacionaria tiene media constante, varianza constante y autocorrelación constante. Con datos estacionarios se facilita el modelado, pues algunos modelos como el ARIMA asumen que los datos son estacionarios, se mejora el pronóstico y la identificación de patrones.</p>
+<p>Para verificar la estacionariedad en los datos de casos nuevos por COVID 19, se utilizará la prueba de Dickey-Fuller aumentado (ADF). El paquete aTSA proporciona una implementación de esta prueba.</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb40-1" tabindex="-1"></a><span class="fu">library</span>(tseries)</span>
+<span id="cb40-2"><a href="descomposición-de-la-serie-de-tiempo..html#cb40-2" tabindex="-1"></a>covid_adf <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(indice_casos.ts)</span>
+<span id="cb40-3"><a href="descomposición-de-la-serie-de-tiempo..html#cb40-3" tabindex="-1"></a><span class="fu">print</span> (covid_adf)</span></code></pre></div>
+<pre><code>## 
+##  Augmented Dickey-Fuller Test
+## 
+## data:  indice_casos.ts
+## Dickey-Fuller = -2.2878, Lag order = 3, p-value = 0.4587
+## alternative hypothesis: stationary</code></pre>
+<p>El valor p es 0.4587, indica que no hay suficiente evidencia para rechazar la hipótesis nula de que la serie no es estacionaria, en estos casos, se requeriría transformar o diferenciar los datos para que sean estacionarios.</p>
+<p>Para ello se podría diferenciar la serie de datos, tomar diferencias sucesivas de la serie para convertirla en estacionaria.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb42-1" tabindex="-1"></a>covid_ts_diff <span class="ot">&lt;-</span> <span class="fu">diff</span>(indice_casos.ts)</span>
+<span id="cb42-2"><a href="descomposición-de-la-serie-de-tiempo..html#cb42-2" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="descomposición-de-la-serie-de-tiempo..html#cb42-3" tabindex="-1"></a><span class="co">#Y se repite la prueba para verificar si funcionó la diferenciación y la serie ahora es estacionaria</span></span>
+<span id="cb42-4"><a href="descomposición-de-la-serie-de-tiempo..html#cb42-4" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="descomposición-de-la-serie-de-tiempo..html#cb42-5" tabindex="-1"></a>covid_adf <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(covid_ts_diff)</span>
+<span id="cb42-6"><a href="descomposición-de-la-serie-de-tiempo..html#cb42-6" tabindex="-1"></a><span class="fu">print</span> (covid_adf)</span></code></pre></div>
+<pre><code>## 
+##  Augmented Dickey-Fuller Test
+## 
+## data:  covid_ts_diff
+## Dickey-Fuller = -5.4418, Lag order = 3, p-value = 0.01
+## alternative hypothesis: stationary</code></pre>
+<p>Ahora se obtiene un valor p menor de 0.01, indica que ya es posible rechazar la hipótesis nula y concluir que la serie es estacionaria después de la primera diferenciación.</p>
+<p>Con esta variable diferenciada, es posible proceder con un análisis o modelado asumiendo que los datos son estacionarios. Se pueden emplear modelos de serie de tiempo como ARIMA, que requieren estacionariedad.</p>
+<p>Adicionalmente, previo al uso de ARIMA, se aplicarán las funciones acf (Autocorrelation Function) y pacf (Partial Autocorrelation Function) para examinar las relaciones entre los valores de la serie en diferentes retardos (lags). Estas dos funciones son herramientas clave para entender patrones y seleccionar modelos de series temporales, como ARIMA.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb44-1" tabindex="-1"></a>covidcompDiff <span class="ot">&lt;-</span> <span class="fu">decompose</span>(covid_ts_diff)</span>
+<span id="cb44-2"><a href="descomposición-de-la-serie-de-tiempo..html#cb44-2" tabindex="-1"></a><span class="fu">plot</span>(covidcompDiff)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p>En la gráfica anterior identificamos que después de diferenciar los datos, se observa que cambia la tendencia, se mantiene un patrón en la estacionalidad y el ruido sigue presentando picos.</p>
+<p>Se procede a realizar una segunda diferenciación, dado que a veces, una única diferenciación no es suficiente:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb45-1" tabindex="-1"></a>covid_ts_diff2 <span class="ot">&lt;-</span> <span class="fu">diff</span>(covid_ts_diff)</span>
+<span id="cb45-2"><a href="descomposición-de-la-serie-de-tiempo..html#cb45-2" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="descomposición-de-la-serie-de-tiempo..html#cb45-3" tabindex="-1"></a>covidcompDiff2 <span class="ot">&lt;-</span> <span class="fu">decompose</span>(covid_ts_diff2)</span>
+<span id="cb45-4"><a href="descomposición-de-la-serie-de-tiempo..html#cb45-4" tabindex="-1"></a><span class="fu">plot</span>(covidcompDiff2)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p>Con la segunda diferenciación, el ruido se mantiene. A continuación, se realiza una transformación Box Cox para estabilizar la varianza.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb46-1" tabindex="-1"></a><span class="fu">library</span>(forecast)</span></code></pre></div>
+<pre><code>## Warning: package &#39;forecast&#39; was built under R version 4.3.3</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb48-1" tabindex="-1"></a><span class="co"># Encontrar el valor óptimo de lambda para la transformación de Box-Cox</span></span>
+<span id="cb48-2"><a href="descomposición-de-la-serie-de-tiempo..html#cb48-2" tabindex="-1"></a>lambda_optimo <span class="ot">&lt;-</span> <span class="fu">BoxCox.lambda</span>(indice_casos.ts)</span>
+<span id="cb48-3"><a href="descomposición-de-la-serie-de-tiempo..html#cb48-3" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="descomposición-de-la-serie-de-tiempo..html#cb48-4" tabindex="-1"></a>covid_boxcox <span class="ot">&lt;-</span> <span class="fu">BoxCox</span>(indice_casos.ts, <span class="at">lambda =</span> lambda_optimo)</span></code></pre></div>
+<p>Con los datos transformados, se realiza una nueva descomposición:</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb49-1" tabindex="-1"></a>covidBox <span class="ot">&lt;-</span> <span class="fu">decompose</span>(covid_boxcox)</span>
+<span id="cb49-2"><a href="descomposición-de-la-serie-de-tiempo..html#cb49-2" tabindex="-1"></a><span class="fu">plot</span>(covidBox)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p>Se raliza cálculo de Dickey Fuller para evaluar si hay estacionariedad con los datos transformados mediante Boxcox</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb50-1" tabindex="-1"></a>covid_adfBox <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(covid_boxcox)</span>
+<span id="cb50-2"><a href="descomposición-de-la-serie-de-tiempo..html#cb50-2" tabindex="-1"></a><span class="fu">print</span> (covid_adfBox)</span></code></pre></div>
+<pre><code>## 
+##  Augmented Dickey-Fuller Test
+## 
+## data:  covid_boxcox
+## Dickey-Fuller = -1.8697, Lag order = 3, p-value = 0.6268
+## alternative hypothesis: stationary</code></pre>
+<p>El resultado de la prueba Dickey-Fuller con los datos transformados conBoxCox indica que el valor p = 0.6268 es mayor que el umbral de significancia, lo que significa que rechazamos la hipótesis nula de que la serie no es estacionaria.</p>
+<p>En Resumen, con la transformación Box Cox, se redujo el Random, pero no se mejora la estacionariedad.</p>
+<p><strong>Nota:</strong></p>
+<p>Al encontrar que no había estacionariedad, se realizó una diferenciación de los datos, logrando después de ello la estacionariedad comprobada con la prueba estadística Dickey-Fuller, no obstante, al descomponer de nuevo, se sigue presentando alta variación en el random.</p>
+<p>Para mejorar esta variación se realizó una segunda diferenciación, la cual se mantuvo con alta variación en Random.</p>
+<p>Se realizó una transformación Box Cox, posterior a la cual los observados y las tendencias se suavizan, el random tuvo menos variaciones pero sin estacionariedad.</p>
+<p>De acuerdo a lo anterior, se calculan las funciones de autocorrelación con los datos diferenciados una vez.</p>
+<p><strong>ACF: Función de Autocorrelación</strong></p>
+<p>Mide la correlación entre la serie original y versiones desplazadas (lags) de sí misma. Los valores en el gráfico muestran la correlación total entre la serie y los valores en retardos específicos, los ACF pueden ayudar a determinar el orden de los componentes MA en un modelo ARIMA.</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb52-1" tabindex="-1"></a><span class="fu">acf</span>(covid_ts_diff)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p>Los picos que sobresalen de las líneas de significancia sugieren retardos con autocorrelación significativa. En este caso, solo se observan dos picos, uno al inicio y otro en el lag 0.9.</p>
+<p><strong>PACF: Función de Autocorrelación Parcial</strong></p>
+<p>Mide la correlación entre una serie y sus retardos eliminando la influencia de los retardos intermedios. Los valores significativos en el gráfico PACF sugieren el orden de los componentes AR en un modelo ARIMA.</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="descomposición-de-la-serie-de-tiempo..html#cb53-1" tabindex="-1"></a><span class="fu">pacf</span>(covid_ts_diff)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p>Todos los picos en el gráfico de PACF están dentro de las líneas de significancia, generalmente indica que no hay autocorrelaciones parciales significativas entre la serie de tiempo y sus retardos. Esto sugiere que la serie no tiene un fuerte componente autorregresivo, al menos en los retardos observados. Si ningún pico sobresale de las líneas de significancia, el componente AR del modelo ARIMA puede ser insignificante. Esto significa que la serie probablemente no tiene una fuerte dependencia autorregresiva, es decir que los valores pasados de la serie no están influyendo significativamente en los valores actuales, que la serie se comporta de forma más aleatoria y no sigue patrones claros que se puedan identificar fácilmente a partir de los valores pasados.</p>
+<p>Con lo anterior, Los modelos autorregresivos (AR) no serían útiles para modelar la serie. En este caso, se podrían examinar otras características de la serie. Como el ACF muestra picos significativos, es posible que un modelo MA sea más apropiado, también se podría considerar modelos más complejos como SARIMA.</p>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="análisis-exploratorio-de-datos.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
