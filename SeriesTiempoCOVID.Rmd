@@ -453,3 +453,128 @@ Todos los picos en el gráfico de PACF están dentro de las líneas de significa
 
 Con lo anterior, Los modelos autorregresivos (AR) no serían útiles para modelar la serie. En este caso, se podrían examinar otras características de la serie. Como el ACF muestra picos significativos, es posible que un modelo MA sea más apropiado, también se podría considerar modelos más complejos como SARIMA.
 
+
+# Modelización
+
+## Método de Holt-Winter:
+
+
+El suavizado exponencial de Holt-Winter es una de las técnicas de análisis de series de tiempo más antiguas que tiene en cuenta la tendencia y la estacionalidad al hacer el pronóstico. Este método tiene 3 aspectos principales para realizar las predicciones que son tres tipos de suavizado exponencial. Tiene un valor medio con la tendencia y la estacionalidad.
+
+**Descripción ampliada de los datos:**
+
+Iniciamos graficando nuevamente el índice de los casos nuevos de Covid a través del tiempo
+
+
+```{r}
+
+plot((indice_casos.ts),ylab="(indice_casos)",xlab='Año', main ='Casos nuevos de Covid')
+
+time_indices <- time(indice_casos.ts)
+modelo <- lm(indice_casos.ts ~ time_indices)
+abline(modelo, col = "red", lwd = 2)
+
+```
+
+En la gráfica anterior se observa la tendencia y el comportamiento de los casos nuevos de covid.
+
+```{r}
+cycle(indice_casos.ts)
+```
+
+Con la función cycle se identifica el ciclo al que pertenece cada dato en la serie temporal, en nuestro caso, tenemos datos agrupados por mes con una frecuencia de 12, esta función asigna un número del 1 al 12 a cada mes. Posteriormente calculamos una medida resumen para cada periodo, en este caso un promedio mensual.
+
+```{r}
+plot(aggregate(indice_casos.ts, FUN = mean))
+
+```
+
+Se observa claramente los meses pico con tendencia más alta, en la gráfica es a inicio del 2022.
+
+
+```{r}
+boxplot(indice_casos.ts~cycle(indice_casos.ts))
+```
+
+En la gráfica anterior, cada caja indica la variabilidad de los casos nuevos dentro de cada mes, las cajas más anchas indican mayor variabilidad en el mes como en los meses de enero y diciembre.
+
+Se observa la mediana de casos nuevos de covid de forma mensual, con una mediana mayor en los meses de mayor variabilidad y agosto. La menor se encuentra en febrero y marzo, siendo ambos meses los que tienen datos outlier.
+
+
+A través de la función logaritmo que se aplica a continuación, se busca visualizar mejor los datos de casos nuevos de covid:
+
+```{r}
+
+plot(log(indice_casos.ts),ylab="log(Casos nuevos)",xlab='Año', main ='Logaritmo de casos nuevos de Covid')
+
+```
+
+Como se puede ver en la gráfica anterior, se evidencia una transformación de los datos, destacando una reducción en la variabilidad y una mayor estabilidad a lo largo del tiempo. Entre el año 2020 y 2021 la tendencia es creciente en número de casos, parece más estable con algunas variaciones entre el año 2021 y 2023, a partir de ahí, se observa decreciente.
+
+
+**Aplicación del modelo Holt-Winter:**
+
+Teniendo en cuenta la transformación anterior, procedemos a aplicar el modelo de Holt - Winter utilizando la manera aditiva:
+
+```{r}
+modelo_HW = HoltWinters(log(indice_casos.ts), seasonal="additive")
+plot(modelo_HW, main="Ajuste con Holt-Winters", xlab="Año",ylab="log(Casos nuevos)")
+```
+
+Con la aplicación de este método, se crea una línea de color rojo con una nueva serie de datos, en la cual se puede observar una proximidad entre los puntos con los datos originales color negro. Al aplicar el método de Holt-Winter para ajustar los datos, se nota que este método es adecuado, ya que sigue de buena forma el comportamiento de los datos, con una leve variación en el año 2022, sin embargo, se observa un buen ajuste.
+
+
+A continuación, se descompone la serie de acuerdo a las características: 
+
+```{r}
+plot(fitted(modelo_HW), main="Descomposición con HW",xlab="Año",ylab="log(Casos nuevos)", col = "blue")
+
+```
+
+Se puede evidenciar en la gráfica, que con las transformaciones realizadas se reduce el Random, lo que puede ayudar a generar una buena predicción. 
+
+Xhat grafica los valores ajustados, representa la estimación ajustada de la serie temporal basándose en el modelo Holt-Winters. Muestra cómo el modelo captura la tendencia y la estacionalidad.
+
+El level o nivel indica el nivel subyacente de la serie de nuevos casos de covid en cada punto del tiempo. Es una estimación suave del promedio de la serie en el tiempo. Refleja una tendencia al final descendente.
+
+El trend  o tendencia refleja el componente de tendencia de la serie temporal. Es la velocidad a la que el nivel está cambiando con el tiempo. La tendencia observada es decreciente.
+
+La gráfica de Season o estacionalidad muestra si hay patrones cíclicos, lo cual no es evidente en este caso. Cada valor estacional se calcula respecto al promedio general (nivel).
+
+
+**Predicción:**
+
+
+Ahora, se realizará la predicción para el año siguiente (12 meses) de los casos nuevos de Covid
+
+```{r}
+pred=predict(modelo_HW, 12, prediction.interval = TRUE)
+pred
+```
+```{r}
+plot(modelo_HW,pred)
+```
+
+De esta forma se puede observar la tendencia del comportamiento para los próximos 12 meses, con sus respectivos intervalos de confianza, la cual se presenta en descenso.
+
+## Método de Suavizamiento Exponencial:
+
+El suavizamiento exponencial es un tipo de promedio ponderado que estima el valor futuro en función del pronóstico anterior más un porcentaje de error pronosticado.
+
+
+```{r warning=FALSE}
+library(forecast)
+fit_ses<-ses(log(indice_casos.ts),h=1, initial="simple",alpha=0.1)
+fit_ses
+```
+
+El pronóstico es de 15.84 con los intervalos de predicción Lo(bajo) y Hi (Alto)
+
+```{r}
+summary(fit_ses)
+```
+```{r}
+plot(fit_ses)
+```
+
+El valor pronosticado para abril de 2024 sería de 15.8 casos nuevos de covid con un intervalo 95% entre 10 y 21 casos. en general, con el suavizado, se mantiene la tendencia a la disminución en el número de casos nuevos.

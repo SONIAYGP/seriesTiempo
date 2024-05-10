@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4 Modelización | Análisis de Series de Tiempo relacionados con COVID19</title>
+  <meta name="description" content="Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024" />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4 Modelización | Análisis de Series de Tiempo relacionados con COVID19" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024" />
+  <meta name="github-repo" content="Familia GSMSciencede tiempo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4 Modelización | Análisis de Series de Tiempo relacionados con COVID19" />
+  
+  <meta name="twitter:description" content="Se incluye un análisis de series de tiempo con datos relacionados con el COVID 19 desde 2020 hasta enero de 2024" />
+  
+
+<meta name="author" content="GRUPO 6: Maria José Reina Torres, Sonia Yurany Gallego Paz, Juan José León Tabares" />
+
+
+<meta name="date" content="2024-05-10" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="descomposición-de-la-serie-de-tiempo..html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="introducción.html"><a href="introducción.html"><i class="fa fa-check"></i><b>1</b> Introducción:</a></li>
+<li class="chapter" data-level="2" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html"><i class="fa fa-check"></i><b>2</b> Análisis Exploratorio de datos:</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#exploración-y-preprocesamiento-del-dataset"><i class="fa fa-check"></i><b>2.1</b> Exploración y preprocesamiento del dataset:</a></li>
+<li class="chapter" data-level="2.2" data-path="análisis-exploratorio-de-datos.html"><a href="análisis-exploratorio-de-datos.html#estructura-y-exploración-de-datos-en-serie-de-tiempo"><i class="fa fa-check"></i><b>2.2</b> Estructura y exploración de datos en serie de tiempo:</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="descomposición-de-la-serie-de-tiempo..html"><a href="descomposición-de-la-serie-de-tiempo..html"><i class="fa fa-check"></i><b>3</b> Descomposición de la serie de tiempo.</a></li>
+<li class="chapter" data-level="4" data-path="modelización.html"><a href="modelización.html"><i class="fa fa-check"></i><b>4</b> Modelización</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="modelización.html"><a href="modelización.html#método-de-holt-winter"><i class="fa fa-check"></i><b>4.1</b> Método de Holt-Winter:</a></li>
+<li class="chapter" data-level="4.2" data-path="modelización.html"><a href="modelización.html#método-de-suavizamiento-exponencial"><i class="fa fa-check"></i><b>4.2</b> Método de Suavizamiento Exponencial:</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis de Series de Tiempo relacionados con COVID19</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="modelización" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">4</span> Modelización<a href="modelización.html#modelización" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="método-de-holt-winter" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Método de Holt-Winter:<a href="modelización.html#método-de-holt-winter" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El suavizado exponencial de Holt-Winter es una de las técnicas de análisis de series de tiempo más antiguas que tiene en cuenta la tendencia y la estacionalidad al hacer el pronóstico. Este método tiene 3 aspectos principales para realizar las predicciones que son tres tipos de suavizado exponencial. Tiene un valor medio con la tendencia y la estacionalidad.</p>
+<p><strong>Descripción ampliada de los datos:</strong></p>
+<p>Iniciamos graficando nuevamente el índice de los casos nuevos de Covid a través del tiempo</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="modelización.html#cb54-1" tabindex="-1"></a><span class="fu">plot</span>((indice_casos.ts),<span class="at">ylab=</span><span class="st">&quot;(indice_casos)&quot;</span>,<span class="at">xlab=</span><span class="st">&#39;Año&#39;</span>, <span class="at">main =</span><span class="st">&#39;Casos nuevos de Covid&#39;</span>)</span>
+<span id="cb54-2"><a href="modelización.html#cb54-2" tabindex="-1"></a></span>
+<span id="cb54-3"><a href="modelización.html#cb54-3" tabindex="-1"></a>time_indices <span class="ot">&lt;-</span> <span class="fu">time</span>(indice_casos.ts)</span>
+<span id="cb54-4"><a href="modelización.html#cb54-4" tabindex="-1"></a>modelo <span class="ot">&lt;-</span> <span class="fu">lm</span>(indice_casos.ts <span class="sc">~</span> time_indices)</span>
+<span id="cb54-5"><a href="modelización.html#cb54-5" tabindex="-1"></a><span class="fu">abline</span>(modelo, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p>En la gráfica anterior se observa la tendencia y el comportamiento de los casos nuevos de covid.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="modelización.html#cb55-1" tabindex="-1"></a><span class="fu">cycle</span>(indice_casos.ts)</span></code></pre></div>
+<pre><code>##      Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+## 2020   1   2   3   4   5   6   7   8   9  10  11  12
+## 2021   1   2   3   4   5   6   7   8   9  10  11  12
+## 2022   1   2   3   4   5   6   7   8   9  10  11  12
+## 2023   1   2   3   4   5   6   7   8   9  10  11  12
+## 2024   1   2   3</code></pre>
+<p>Con la función cycle se identifica el ciclo al que pertenece cada dato en la serie temporal, en nuestro caso, tenemos datos agrupados por mes con una frecuencia de 12, esta función asigna un número del 1 al 12 a cada mes. Posteriormente calculamos una medida resumen para cada periodo, en este caso un promedio mensual.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="modelización.html#cb57-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">aggregate</span>(indice_casos.ts, <span class="at">FUN =</span> mean))</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p>Se observa claramente los meses pico con tendencia más alta, en la gráfica es a inicio del 2022.</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="modelización.html#cb58-1" tabindex="-1"></a><span class="fu">boxplot</span>(indice_casos.ts<span class="sc">~</span><span class="fu">cycle</span>(indice_casos.ts))</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p>En la gráfica anterior, cada caja indica la variabilidad de los casos nuevos dentro de cada mes, las cajas más anchas indican mayor variabilidad en el mes como en los meses de enero y diciembre.</p>
+<p>Se observa la mediana de casos nuevos de covid de forma mensual, con una mediana mayor en los meses de mayor variabilidad y agosto. La menor se encuentra en febrero y marzo, siendo ambos meses los que tienen datos outlier.</p>
+<p>A través de la función logaritmo que se aplica a continuación, se busca visualizar mejor los datos de casos nuevos de covid:</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="modelización.html#cb59-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(indice_casos.ts),<span class="at">ylab=</span><span class="st">&quot;log(Casos nuevos)&quot;</span>,<span class="at">xlab=</span><span class="st">&#39;Año&#39;</span>, <span class="at">main =</span><span class="st">&#39;Logaritmo de casos nuevos de Covid&#39;</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p>Como se puede ver en la gráfica anterior, se evidencia una transformación de los datos, destacando una reducción en la variabilidad y una mayor estabilidad a lo largo del tiempo. Entre el año 2020 y 2021 la tendencia es creciente en número de casos, parece más estable con algunas variaciones entre el año 2021 y 2023, a partir de ahí, se observa decreciente.</p>
+<p><strong>Aplicación del modelo Holt-Winter:</strong></p>
+<p>Teniendo en cuenta la transformación anterior, procedemos a aplicar el modelo de Holt - Winter utilizando la manera aditiva:</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="modelización.html#cb60-1" tabindex="-1"></a>modelo_HW <span class="ot">=</span> <span class="fu">HoltWinters</span>(<span class="fu">log</span>(indice_casos.ts), <span class="at">seasonal=</span><span class="st">&quot;additive&quot;</span>)</span>
+<span id="cb60-2"><a href="modelización.html#cb60-2" tabindex="-1"></a><span class="fu">plot</span>(modelo_HW, <span class="at">main=</span><span class="st">&quot;Ajuste con Holt-Winters&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Año&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;log(Casos nuevos)&quot;</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<p>Con la aplicación de este método, se crea una línea de color rojo con una nueva serie de datos, en la cual se puede observar una proximidad entre los puntos con los datos originales color negro. Al aplicar el método de Holt-Winter para ajustar los datos, se nota que este método es adecuado, ya que sigue de buena forma el comportamiento de los datos, con una leve variación en el año 2022, sin embargo, se observa un buen ajuste.</p>
+<p>A continuación, se descompone la serie de acuerdo a las características:</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="modelización.html#cb61-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(modelo_HW), <span class="at">main=</span><span class="st">&quot;Descomposición con HW&quot;</span>,<span class="at">xlab=</span><span class="st">&quot;Año&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;log(Casos nuevos)&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<p>Se puede evidenciar en la gráfica, que con las transformaciones realizadas se reduce el Random, lo que puede ayudar a generar una buena predicción.</p>
+<p>Xhat grafica los valores ajustados, representa la estimación ajustada de la serie temporal basándose en el modelo Holt-Winters. Muestra cómo el modelo captura la tendencia y la estacionalidad.</p>
+<p>El level o nivel indica el nivel subyacente de la serie de nuevos casos de covid en cada punto del tiempo. Es una estimación suave del promedio de la serie en el tiempo. Refleja una tendencia al final descendente.</p>
+<p>El trend o tendencia refleja el componente de tendencia de la serie temporal. Es la velocidad a la que el nivel está cambiando con el tiempo. La tendencia observada es decreciente.</p>
+<p>La gráfica de Season o estacionalidad muestra si hay patrones cíclicos, lo cual no es evidente en este caso. Cada valor estacional se calcula respecto al promedio general (nivel).</p>
+<p><strong>Predicción:</strong></p>
+<p>Ahora, se realizará la predicción para el año siguiente (12 meses) de los casos nuevos de Covid</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="modelización.html#cb62-1" tabindex="-1"></a>pred<span class="ot">=</span><span class="fu">predict</span>(modelo_HW, <span class="dv">12</span>, <span class="at">prediction.interval =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb62-2"><a href="modelización.html#cb62-2" tabindex="-1"></a>pred</span></code></pre></div>
+<pre><code>##               fit      upr       lwr
+## Apr 2024 13.96551 15.21492 12.716107
+## May 2024 13.74096 15.28488 12.197045
+## Jun 2024 13.30177 15.13670 11.466830
+## Jul 2024 13.85985 15.98712 11.732574
+## Aug 2024 14.03887 16.46227 11.615464
+## Sep 2024 13.49625 16.22097 10.771525
+## Oct 2024 13.41748 16.44952 10.385444
+## Nov 2024 13.35777 16.70361 10.011922
+## Dec 2024 14.01899 17.68542 10.352567
+## Jan 2025 13.60447 17.59842  9.610529
+## Feb 2025 12.57885 16.90733  8.250369
+## Mar 2025 12.34571 17.01576  7.675656</code></pre>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="modelización.html#cb64-1" tabindex="-1"></a><span class="fu">plot</span>(modelo_HW,pred)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
+<p>De esta forma se puede observar la tendencia del comportamiento para los próximos 12 meses, con sus respectivos intervalos de confianza, la cual se presenta en descenso.</p>
+</div>
+<div id="método-de-suavizamiento-exponencial" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Método de Suavizamiento Exponencial:<a href="modelización.html#método-de-suavizamiento-exponencial" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El suavizamiento exponencial es un tipo de promedio ponderado que estima el valor futuro en función del pronóstico anterior más un porcentaje de error pronosticado.</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="modelización.html#cb65-1" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb65-2"><a href="modelización.html#cb65-2" tabindex="-1"></a>fit_ses<span class="ot">&lt;-</span><span class="fu">ses</span>(<span class="fu">log</span>(indice_casos.ts),<span class="at">h=</span><span class="dv">1</span>, <span class="at">initial=</span><span class="st">&quot;simple&quot;</span>,<span class="at">alpha=</span><span class="fl">0.1</span>)</span>
+<span id="cb65-3"><a href="modelización.html#cb65-3" tabindex="-1"></a>fit_ses</span></code></pre></div>
+<pre><code>##          Point Forecast    Lo 80   Hi 80    Lo 95    Hi 95
+## Apr 2024       15.84566 12.24843 19.4429 10.34417 21.34716</code></pre>
+<p>El pronóstico es de 15.84 con los intervalos de predicción Lo(bajo) y Hi (Alto)</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="modelización.html#cb67-1" tabindex="-1"></a><span class="fu">summary</span>(fit_ses)</span></code></pre></div>
+<pre><code>## 
+## Forecast method: Simple exponential smoothing
+## 
+## Model Information:
+## Simple exponential smoothing 
+## 
+## Call:
+##  ses(y = log(indice_casos.ts), h = 1, initial = &quot;simple&quot;, alpha = 0.1) 
+## 
+##   Smoothing parameters:
+##     alpha = 0.1 
+## 
+##   Initial states:
+##     l = 9.0045 
+## 
+##   sigma:  2.8069
+## Error measures:
+##                    ME     RMSE      MAE      MPE     MAPE     MASE      ACF1
+## Training set 1.341396 2.806937 2.274939 7.479261 13.56641 1.192265 0.9192371
+## 
+## Forecasts:
+##          Point Forecast    Lo 80   Hi 80    Lo 95    Hi 95
+## Apr 2024       15.84566 12.24843 19.4429 10.34417 21.34716</code></pre>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="modelización.html#cb69-1" tabindex="-1"></a><span class="fu">plot</span>(fit_ses)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p>El valor pronosticado para abril de 2024 sería de 15.8 casos nuevos de covid con un intervalo 95% entre 10 y 21 casos. en general, con el suavizado, se mantiene la tendencia a la disminución en el número de casos nuevos.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="descomposición-de-la-serie-de-tiempo..html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
