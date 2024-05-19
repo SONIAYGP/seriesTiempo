@@ -578,3 +578,147 @@ plot(fit_ses)
 ```
 
 El valor pronosticado para abril de 2024 sería de 15.8 casos nuevos de covid con un intervalo 95% entre 10 y 21 casos. en general, con el suavizado, se mantiene la tendencia a la disminución en el número de casos nuevos.
+
+
+## Modelos estacionarios en series de tiempo: Metodología Box-Jenkins
+
+Se aplica a los modelos autorregresivos de media móvil ARMA o a los modelos autorregresivos integrados de media móvil ARIMA para encontrar el mejor ajuste de una serie temporal con el fin de que los pronósticos sean más acertados.
+
+Dentro de los pasos a seguir, tenemos:
+
+* Visualizar la serie.
+* Transformarla en estacionaria.
+* Graficar ACF - PACF, escoger los parámetros.
+* Construir el modelo.
+* Hacer predicción.
+
+**Visualizar la Serie y transformarla en estacionaria:**
+
+Como se expuso en el punto 3. de este documento, el valor p de la prueba de Dickey-Fuller aumentado (ADF)es 0.4587, indica que no hay suficiente evidencia para rechazar la hipótesis nula de que la serie no es estacionaria, en estos casos, se requeriría transformar o diferenciar los datos para que sean estacionarios. 
+
+En ese caso, se aplicó una primera diferenciación en la variable covid_ts_diff dónde se obtuvo un valor p menor de 0.01, indica que ya es posible rechazar la hipótesis nula y concluir que la serie es estacionaria después de la primera diferenciación.
+
+**Graficar ACF - PACF, escoger los parámetros:**
+
+Se realiza gráfico de las Funciones de autocovarianza (ACF) y autocorrelación (PACF):
+
+```{r}
+
+par(mfrow = c(1, 2))
+ACF_dif1<-acf(covid_ts_diff)
+PACF_dif1<-pacf(covid_ts_diff)
+```
+
+La descripción de estas gráficas ya fue realizada.
+
+
+**Construir el modelo y hacer predicción:**
+
+Teniendo en cuenta esto, se procede a aplicar el modelo sugerido ARIMA:
+
+```{r message=FALSE, warning=FALSE}
+library(forecast)
+
+modelo_dif1<-auto.arima(covid_ts_diff)
+modelo_dif1
+pronostico_dif1<- forecast(modelo_dif1,12,level=95)
+pronostico_dif1
+plot(pronostico_dif1,main="Pronóstico con Arima para Casos nuevos de Covid con diferenciación",xlab="Año",ylab="covid_ts_diff")
+grid()
+
+```
+
+En resumen, el modelo ARIMA(0,0,2) con media cero refleja coeficientes significativos para los términos de media móvil, pero la alta varianza de los residuos y los valores altos de AIC, AICc y BIC indican que el modelo puede no ser óptimo y puede necesitar una revisión o ajuste adicional.
+
+Además como se evidencia en la gráfica, si el pronóstico es el mismo para todos los meses, eso indica que hay un problema con el modelo ajustado.
+
+Por lo anterior, se tomará la variable covid_ts_diff2 en dónde se procedió a realizar una segunda diferenciación para ver si se ajusta el modelo, antes de eso, nuevamente se procede a graficar las Funciones de autocovarianza (ACF) y autocorrelación (PACF) para estos datos:
+
+```{r}
+par(mfrow = c(1, 2))
+
+ACF_dif2<-acf(covid_ts_diff2)
+PACF_dif2<-pacf(covid_ts_diff2)
+```
+
+
+```{r}
+modelo_dif2<-auto.arima(covid_ts_diff2)
+modelo_dif2
+pronostico_dif2<- forecast(modelo_dif2,12,level=95)
+pronostico_dif2
+plot(pronostico_dif2,main="Pronóstico con Arima para Casos nuevos de Covid con segunda diferenciación",xlab="Año",ylab="covid_ts_diff2")
+grid()
+```
+ 
+Este modelo ARIMA indica que se utilizan cinco términos autorregresivos (AR) y un término de media móvil (MA), sin aplicar diferenciación (I), y el modelo no incluye un término constante distinto de cero.  En resumen, el modelo ARIMA(5,0,1) parece capturar bien la estructura de la serie temporal "covid_ts_diff2", con coeficientes significativos para los términos AR y MA. Sin embargo, siempre es importante validar el modelo y considerar si hay margen para mejorar el ajuste.
+ 
+Ademas el pronóstico demostrado en la gráfica presenta valores muy pequeños para todos los meses.
+
+Por lo anterior, se procede a aplicar logaritmo a la serie inicial para ajustar la estacionariedad y para poder mejorar el pronóstico, al igual que en los dos casos anteriores, se realiza primero el gráfico de las Funciones de autocovarianza (ACF) y autocorrelación (PACF):
+
+```{r}
+
+par(mfrow = c(1, 2))
+ACF_log<-acf(log(indice_casos.ts))
+PACF_log<-pacf(log(indice_casos.ts))
+```
+
+Se continua con el cálculo:
+
+```{r}
+modelo_log<-auto.arima(log(indice_casos.ts))
+modelo_log
+pronostico_log<- forecast(modelo_log,12,level=95)
+pronostico_log
+plot(pronostico_log,main="Pronóstico con Arima para Casos nuevos de Covid con transformación Log",xlab="Año",ylab="Log_indice_Casos")
+grid()
+```
+
+De acuerdo con los resultados, se puede evidenciar que este modelo ARIMA indica que se utiliza un término de media móvil (MA) de orden 1 (q=1), sin términos autorregresivos (AR) (p=0), y se ha aplicado una diferenciación de segundo orden (d=2) a la serie temporal original.
+
+El modelo ARIMA (0,2,1) ajustado a la serie con transformación log, proporciona una aproximación adecuada, con un solo término de media móvil y una diferenciación de segundo orden. Al aplicar esta transformación se obtiene un pronóstico más acertado, el cual también refleja una tendencia de disminución en los próximos 12 meses, lo que concuerda con la realidad observada en los nuevos casos de Covid. Por lo tanto, este pronóstico puede ser considerado como acertado para esta serie temporal.
+
+Teniendo en cuenta lo anterior, se procede a calcular y graficar los residuales: 
+
+```{r}
+residuales<-modelo_log$residuals
+residuales
+qqnorm(residuales)
+qqline(residuales)
+```
+
+Los residuales representan la diferencia entre los valores observados y los valores predichos por el modelo. En este contexto, los residuales son las discrepancias entre los valores reales y los valores pronosticados para cada mes de los años 2020 a 2023.
+
+Ahora aplicaremos el Test Shapiro con el fin de validar si los residuales presentan una distribución normal:
+
+```{r}
+shapiro.test(residuales)
+```
+
+Se puede evidenciar que el valor W =0.98 es cercano a 1, lo que significa que los residuales no se desvían significativamente de una distribución normal, ya que cuanto más cercano esté a 1, más consistentes son los datos con una distribución normal.
+
+Por otro lado con el valor p se puede observar si los datos provienen de una población con una distribución normal. Un valor p alto (generalmente mayor que 0.05) indica que no hay suficiente evidencia para rechazar la hipótesis nula de que los datos provienen de una distribución normal. En este caso, el valor p es 0.6831, lo que sugiere que los datos tienen una distribución normal, .
+
+Teniendo en cuenta lo anterior, se puede determinar que el modelo ARIMA ajustado es adecuado para los datos.
+
+Finalmente aplicamos el Box-Ljung test para verificar la presencia de autocorrelación en los residuos del modelo:
+
+```{r}
+Box.test(residuales,type = "Ljung-Box")
+```
+
+El resultado del test de Box-Ljung X-squared = 0.77733 y p = 0.378 indican que no hay suficiente evidencia para afirmar que exista autocorrelación significativa en los residuales del modelo de series temporales. Por lo tanto, no se puede afirmar que haya autocorrelación en los residuales generando un impacto positivo en el modelo:
+
+* Las predicciones del modelo no están sistemáticamente sesgadas por patrones no modelados,
+
+* Hay independencia de los errores reforzando la confianza en los resultados,
+
+* Los intervalos de confianza y las pruebas de hipótesis derivadas del modelo son más confiables
+
+* Los estimadores de los coeficientes del modelo son eficientes y tienen varianza mínima dando precisión a las estimaciones, y
+
+* Los errores en una observación no son predictivos de los errores en las observaciones futuras.
+
+
+
