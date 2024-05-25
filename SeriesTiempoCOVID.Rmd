@@ -721,4 +721,101 @@ El resultado del test de Box-Ljung X-squared = 0.77733 y p = 0.378 indican que n
 * Los errores en una observación no son predictivos de los errores en las observaciones futuras.
 
 
+## Algoritmo Facebook´s Prophet
+
+El modelo Prophet fue propuesto originalmente para pronosticar datos diarios con estacionalidad semanal y anual, además de efectos de vacaciones. Posteriormente se amplió para cubrir más tipos de datos estacionales.
+
+
+A continuación, se aplica el algoritmo de Facebook`s Prophet al data set definido anteriormente como indice_casos.ts con la segunda diferenciación antes de iniciar con el proceso dado que ya se aplicaron las pruebas (prueba ADF) y los datos son estacionarios. 
+
+De acuerdo a las propiedades de Prophet es necesario convertir los datos de series de tiempo a dataframe teniendo presente que los datos se encuentran en meses. Prophet funciona mejor con series temporales que tienen una fuerte estacionalidad y varias temporadas de datos históricos.
+
+
+
+```{r message=FALSE, warning=FALSE}
+library(prophet)
+library(tseries)
+
+# Se convierte la serie de tiempo a un data.frame para Prophet
+
+df <- data.frame(
+  ds = seq.Date(from = as.Date("2020-01-01"), by = "month", length.out = length(covid_ts_diff2)),
+  y = as.numeric(covid_ts_diff2)
+)
+
+# Se visualizan los primeros registros para verificar
+
+head(df)
+
+```
+
+Una vez verificado el dataset, se ajusta el modelo Prophet:
+
+```{r}
+
+# Se crea y ajusta el modelo Prophet con estacionalidades semanal y diaria habilitadas
+m <- prophet(weekly.seasonality = TRUE, daily.seasonality = TRUE)
+m <- fit.prophet(m, df)
+
+```
+
+
+Prophet por defecto ha deshabilitado la estacionalidad semanal y diaria para el modelo. Esto se debe a que Prophet detecta que la frecuencia de los datos es mensual, y por lo tanto, la estacionalidad semanal y diaria no es relevante en este contexto.
+
+Se crea un dataframe para hacer las predicciones en el futuro con las fechas deseadas de meses.
+
+
+```{r}
+# Se Crea un data frame de fechas futuras para predicciones (24 meses en el futuro)
+future <- make_future_dataframe(m, periods = 24, freq = "month")
+
+```
+
+Se utiliza el modelo ajustado para hacer las predicciones sobre el conjunto de datos futuros
+
+```{r}
+#  Predicciones:
+
+forecast <- predict(m, future)
+```
+
+Finalmente se realiza la visualización de las predicciones con los datos ajustados:
+
+```{r}
+
+plot(m, forecast)
+
+```
+
+En la gráfica de la predicción se observan puntos negros que reflejan los datos históricos reales de la serie de datos que se han utilizado para ajustar el modelo. Con la línea azul se observan los valores predichos por el modelo y se extiende más allá de los datos históricos y genera una estimación de los posibles datos futuros. Se observa variabilidad en dicha predicción.
+
+
+La zona sombreada corresponde a los intervalos de incertidumbre mostrando el rango en el que se espera que caigan los valores futuros con cierto nivel de confianza.
+
+
+A continuación, se visualizan los componentes de las predicciones:
+
+```{r}
+
+prophet_plot_components(m, forecast)
+
+```
+
+En las gráficas se puede observar claramente la tendencia real de los datos. Específicamente, se muestra que los casos de COVID-19 presentan una disminución en los próximos 24 meses. Este comportamiento también se refleja en los modelos presentados anteriormente, confirmando la consistencia de las predicciones. 
+
+
+La visualización de la tendencia descendente proporciona una perspectiva optimista sobre la evolución de la pandemia, respaldada por los análisis previos y los datos históricos diferenciados.
+
+
+Podemos observar las fluctuaciones en los datos a lo largo de la semana y el día, lo que nos proporciona información detallada sobre la dinámica de los casos de COVID-19. Se destaca que los miércoles se registran el menor número de nuevos casos de COVID-19, mientras que los sábados muestran el pico más alto en el número de casos. Este patrón semanal revela posibles correlaciones con actividades humanas y comportamientos sociales.
+
+Además, se identifica un notable aumento en el número de casos nuevos entre los meses de julio y abril, indicando un período de mayor transmisión de la enfermedad. Esta tendencia sugiere la importancia de implementar medidas preventivas y de control durante ese período para contener la propagación del virus.
+
+Por último, se observa que el número de casos de COVID-19 es relativamente bajo entre las 10:00 p.m. y las 2:00 a.m. Esto puede estar relacionado con el cumplimiento de las medidas de distanciamiento social durante las horas nocturnas, así como con las actividades laborales y sociales que ocurren durante el día. No obstante, los datos no reflejan la hora exacta del contagio, sino la hora del reporte del caso positivo.
+
+En resumen, la visualización de estos patrones temporales nos ofrece una perspectiva detallada sobre la distribución de los casos de Covid, lo que puede ser útil para informar y adaptar estrategias de prevención y control de la enfermedad.
+
+**Nota sobre el proceso de los dataset:**
+
+Se realizó una prueba transformando el set de datos a una escala logarítmica, la prueba de dicker fuller reflejaba no estacionariedad, por lo que se diferenció la serie logarítmica y al confirmar estacionariedad se corrió el modelo Prophet. Los resultados de Prophet fueron iguales a los del dataset sin transformación logarítmica, razón por la cual, se dejan los datos sin dicha transformación, solo con la segunda diferenciación que nos confirma estacionariedad.
 

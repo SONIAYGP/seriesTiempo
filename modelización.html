@@ -23,7 +23,7 @@
 <meta name="author" content="GRUPO 6: Maria José Reina Torres, Sonia Yurany Gallego Paz, Juan José León Tabares" />
 
 
-<meta name="date" content="2024-05-19" />
+<meta name="date" content="2024-05-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -148,6 +148,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.1" data-path="modelización.html"><a href="modelización.html#método-de-holt-winter"><i class="fa fa-check"></i><b>4.1</b> Método de Holt-Winter:</a></li>
 <li class="chapter" data-level="4.2" data-path="modelización.html"><a href="modelización.html#método-de-suavizamiento-exponencial"><i class="fa fa-check"></i><b>4.2</b> Método de Suavizamiento Exponencial:</a></li>
 <li class="chapter" data-level="4.3" data-path="modelización.html"><a href="modelización.html#modelos-estacionarios-en-series-de-tiempo-metodología-box-jenkins"><i class="fa fa-check"></i><b>4.3</b> Modelos estacionarios en series de tiempo: Metodología Box-Jenkins</a></li>
+<li class="chapter" data-level="4.4" data-path="modelización.html"><a href="modelización.html#algoritmo-facebooks-prophet"><i class="fa fa-check"></i><b>4.4</b> Algoritmo Facebook´s Prophet</a></li>
 </ul></li>
 </ul>
 
@@ -454,6 +455,60 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Los estimadores de los coeficientes del modelo son eficientes y tienen varianza mínima dando precisión a las estimaciones, y</p></li>
 <li><p>Los errores en una observación no son predictivos de los errores en las observaciones futuras.</p></li>
 </ul>
+</div>
+<div id="algoritmo-facebooks-prophet" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> Algoritmo Facebook´s Prophet<a href="modelización.html#algoritmo-facebooks-prophet" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El modelo Prophet fue propuesto originalmente para pronosticar datos diarios con estacionalidad semanal y anual, además de efectos de vacaciones. Posteriormente se amplió para cubrir más tipos de datos estacionales.</p>
+<p>A continuación, se aplica el algoritmo de Facebook`s Prophet al data set definido anteriormente como indice_casos.ts con la segunda diferenciación antes de iniciar con el proceso dado que ya se aplicaron las pruebas (prueba ADF) y los datos son estacionarios.</p>
+<p>De acuerdo a las propiedades de Prophet es necesario convertir los datos de series de tiempo a dataframe teniendo presente que los datos se encuentran en meses. Prophet funciona mejor con series temporales que tienen una fuerte estacionalidad y varias temporadas de datos históricos.</p>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="modelización.html#cb95-1" tabindex="-1"></a><span class="fu">library</span>(prophet)</span>
+<span id="cb95-2"><a href="modelización.html#cb95-2" tabindex="-1"></a><span class="fu">library</span>(tseries)</span>
+<span id="cb95-3"><a href="modelización.html#cb95-3" tabindex="-1"></a></span>
+<span id="cb95-4"><a href="modelización.html#cb95-4" tabindex="-1"></a><span class="co"># Se convierte la serie de tiempo a un data.frame para Prophet</span></span>
+<span id="cb95-5"><a href="modelización.html#cb95-5" tabindex="-1"></a></span>
+<span id="cb95-6"><a href="modelización.html#cb95-6" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb95-7"><a href="modelización.html#cb95-7" tabindex="-1"></a>  <span class="at">ds =</span> <span class="fu">seq.Date</span>(<span class="at">from =</span> <span class="fu">as.Date</span>(<span class="st">&quot;2020-01-01&quot;</span>), <span class="at">by =</span> <span class="st">&quot;month&quot;</span>, <span class="at">length.out =</span> <span class="fu">length</span>(covid_ts_diff2)),</span>
+<span id="cb95-8"><a href="modelización.html#cb95-8" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">as.numeric</span>(covid_ts_diff2)</span>
+<span id="cb95-9"><a href="modelización.html#cb95-9" tabindex="-1"></a>)</span>
+<span id="cb95-10"><a href="modelización.html#cb95-10" tabindex="-1"></a></span>
+<span id="cb95-11"><a href="modelización.html#cb95-11" tabindex="-1"></a><span class="co"># Se visualizan los primeros registros para verificar</span></span>
+<span id="cb95-12"><a href="modelización.html#cb95-12" tabindex="-1"></a></span>
+<span id="cb95-13"><a href="modelización.html#cb95-13" tabindex="-1"></a><span class="fu">head</span>(df)</span></code></pre></div>
+<pre><code>##           ds        y
+## 1 2020-01-01  2171728
+## 2 2020-02-01  3373889
+## 3 2020-03-01 -1621454
+## 4 2020-04-01 -1209542
+## 5 2020-05-01  5568034
+## 6 2020-06-01  4556391</code></pre>
+<p>Una vez verificado el dataset, se ajusta el modelo Prophet:</p>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="modelización.html#cb97-1" tabindex="-1"></a><span class="co"># Se crea y ajusta el modelo Prophet con estacionalidades semanal y diaria habilitadas</span></span>
+<span id="cb97-2"><a href="modelización.html#cb97-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">prophet</span>(<span class="at">weekly.seasonality =</span> <span class="cn">TRUE</span>, <span class="at">daily.seasonality =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb97-3"><a href="modelización.html#cb97-3" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">fit.prophet</span>(m, df)</span></code></pre></div>
+<p>Prophet por defecto ha deshabilitado la estacionalidad semanal y diaria para el modelo. Esto se debe a que Prophet detecta que la frecuencia de los datos es mensual, y por lo tanto, la estacionalidad semanal y diaria no es relevante en este contexto.</p>
+<p>Se crea un dataframe para hacer las predicciones en el futuro con las fechas deseadas de meses.</p>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="modelización.html#cb98-1" tabindex="-1"></a><span class="co"># Se Crea un data frame de fechas futuras para predicciones (24 meses en el futuro)</span></span>
+<span id="cb98-2"><a href="modelización.html#cb98-2" tabindex="-1"></a>future <span class="ot">&lt;-</span> <span class="fu">make_future_dataframe</span>(m, <span class="at">periods =</span> <span class="dv">24</span>, <span class="at">freq =</span> <span class="st">&quot;month&quot;</span>)</span></code></pre></div>
+<p>Se utiliza el modelo ajustado para hacer las predicciones sobre el conjunto de datos futuros</p>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="modelización.html#cb99-1" tabindex="-1"></a><span class="co">#  Predicciones:</span></span>
+<span id="cb99-2"><a href="modelización.html#cb99-2" tabindex="-1"></a></span>
+<span id="cb99-3"><a href="modelización.html#cb99-3" tabindex="-1"></a>forecast <span class="ot">&lt;-</span> <span class="fu">predict</span>(m, future)</span></code></pre></div>
+<p>Finalmente se realiza la visualización de las predicciones con los datos ajustados:</p>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="modelización.html#cb100-1" tabindex="-1"></a><span class="fu">plot</span>(m, forecast)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
+<p>En la gráfica de la predicción se observan puntos negros que reflejan los datos históricos reales de la serie de datos que se han utilizado para ajustar el modelo. Con la línea azul se observan los valores predichos por el modelo y se extiende más allá de los datos históricos y genera una estimación de los posibles datos futuros. Se observa variabilidad en dicha predicción.</p>
+<p>La zona sombreada corresponde a los intervalos de incertidumbre mostrando el rango en el que se espera que caigan los valores futuros con cierto nivel de confianza.</p>
+<p>A continuación, se visualizan los componentes de las predicciones:</p>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="modelización.html#cb101-1" tabindex="-1"></a><span class="fu">prophet_plot_components</span>(m, forecast)</span></code></pre></div>
+<p><img src="SeriesTiempoCOVID_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
+<p>En las gráficas se puede observar claramente la tendencia real de los datos. Específicamente, se muestra que los casos de COVID-19 presentan una disminución en los próximos 24 meses. Este comportamiento también se refleja en los modelos presentados anteriormente, confirmando la consistencia de las predicciones.</p>
+<p>La visualización de la tendencia descendente proporciona una perspectiva optimista sobre la evolución de la pandemia, respaldada por los análisis previos y los datos históricos diferenciados.</p>
+<p>Podemos observar las fluctuaciones en los datos a lo largo de la semana y el día, lo que nos proporciona información detallada sobre la dinámica de los casos de COVID-19. Se destaca que los miércoles se registran el menor número de nuevos casos de COVID-19, mientras que los sábados muestran el pico más alto en el número de casos. Este patrón semanal revela posibles correlaciones con actividades humanas y comportamientos sociales.</p>
+<p>Además, se identifica un notable aumento en el número de casos nuevos entre los meses de julio y abril, indicando un período de mayor transmisión de la enfermedad. Esta tendencia sugiere la importancia de implementar medidas preventivas y de control durante ese período para contener la propagación del virus.</p>
+<p>Por último, se observa que el número de casos de COVID-19 es relativamente bajo entre las 10:00 p.m. y las 2:00 a.m. Esto puede estar relacionado con el cumplimiento de las medidas de distanciamiento social durante las horas nocturnas, así como con las actividades laborales y sociales que ocurren durante el día. No obstante, los datos no reflejan la hora exacta del contagio, sino la hora del reporte del caso positivo.</p>
+<p>En resumen, la visualización de estos patrones temporales nos ofrece una perspectiva detallada sobre la distribución de los casos de Covid, lo que puede ser útil para informar y adaptar estrategias de prevención y control de la enfermedad.</p>
+<p><strong>Nota sobre el proceso de los dataset:</strong></p>
+<p>Se realizó una prueba transformando el set de datos a una escala logarítmica, la prueba de dicker fuller reflejaba no estacionariedad, por lo que se diferenció la serie logarítmica y al confirmar estacionariedad se corrió el modelo Prophet. Los resultados de Prophet fueron iguales a los del dataset sin transformación logarítmica, razón por la cual, se dejan los datos sin dicha transformación, solo con la segunda diferenciación que nos confirma estacionariedad.</p>
 </div>
 </div>
             </section>
