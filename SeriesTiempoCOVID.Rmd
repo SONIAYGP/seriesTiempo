@@ -819,3 +819,7 @@ En resumen, la visualización de estos patrones temporales nos ofrece una perspe
 
 Se realizó una prueba transformando el set de datos a una escala logarítmica, la prueba de dicker fuller reflejaba no estacionariedad, por lo que se diferenció la serie logarítmica y al confirmar estacionariedad se corrió el modelo Prophet. Los resultados de Prophet fueron iguales a los del dataset sin transformación logarítmica, razón por la cual, se dejan los datos sin dicha transformación, solo con la segunda diferenciación que nos confirma estacionariedad.
 
+**Justificación del Uso del Modelo Prophet como una Regresión en una Serie Temporal**
+
+Prophet es un modelo que combina características de modelos de regresión y de series de tiempo. El modelo Prophet es adecuado para nuestros datos de casos de Covid-19 porque el número de casos nuevos sigue cambiando de forma no lineal, con algunos picos, algunas caídas y algunas mesetas. Esta técnica puede manejar estos patrones complicados mejor que una modelo lineal. Prophet también puede detectar y adaptarse a los cambios de tendencia dando pronósticos más precisos. Esta flexibilidad y capacidad de ajuste hacen que sea una herramienta sólida para analizar y predecir este tipo de series temporales.
+
