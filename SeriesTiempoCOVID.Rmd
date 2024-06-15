@@ -823,3 +823,248 @@ Se realizó una prueba transformando el set de datos a una escala logarítmica, 
 
 Prophet es un modelo que combina características de modelos de regresión y de series de tiempo. El modelo Prophet es adecuado para nuestros datos de casos de Covid-19 porque el número de casos nuevos sigue cambiando de forma no lineal, con algunos picos, algunas caídas y algunas mesetas. Esta técnica puede manejar estos patrones complicados mejor que una modelo lineal. Prophet también puede detectar y adaptarse a los cambios de tendencia dando pronósticos más precisos. Esta flexibilidad y capacidad de ajuste hacen que sea una herramienta sólida para analizar y predecir este tipo de series temporales.
 
+
+# Redes Neuronales recurrentes.
+
+
+La idea de las redes neuronales recurrentes (RNN) es hacer uso de información secuencial. Esto es, para procesar datos en los cuales hay una dependencia de los datos procesados anteriormente. Debido a la naturaleza de las series de tiempo, la RNN son una herramienta muy apropiada para modelarlas, ya que son un tipo de redes con una arquitectura que implementa una cierta memoria y, por lo tanto, un sentido temporal. Esto se consigue implementando algunas neuronas que reciben como entrada la salida de una de las capas e inyectan su salida en una de las capas de un nivel anterior a ella.
+
+Se cuenta con las redes de ELMAN y JORDAN, las entradas de estas neuronas, se toman desde las salidas de las neuronas de una de las capas ocultas, y sus salidas se conectan de nuevo en las entradas de esta misma capa, lo que proporciona una especie de memoria sobre el estado anterior de dicha capa.
+
+Una red neuronal recurrente no tiene una estructura de capas definida, sino que permiten conexiones arbitrarias entre las neuronas, incluso pudiendo crear ciclos, con esto se consigue crear la temporalidad, permitiendo que la red tenga memoria. Se denominan recurrentes porque realizan la misma tarea para cada elemento de una secuencia, y la salida depende de los cálculos anteriores.
+
+```{r message=FALSE, warning=FALSE}
+
+#Se cargan las librerías necesarias para ejecutar las RNN
+library(RSNNS)
+library(quantmod)
+```
+
+## Modelo de Elman
+
+
+Es un tipo específico de RNN que fue desarrollado por Jeffrey Elman en 1990. Es conocido por su arquitectura de red simple pero efectiva que introduce una capa de contexto para capturar y almacenar información sobre estados previos, lo que le permite aprender dependencias temporales en secuencias de datos.
+
+Consta de las siguientes componentes:
+
+* **Capa de Entrada:** Recibe los datos de entrada.
+
+* **Capa Oculta:** Procesa los datos de entrada y también recibe la salida de la capa de contexto.
+
+* **Capa de Salida:** Produce la predicción o salida final.
+
+* **Capa de Contexto:** Almacena una copia de la salida de la capa oculta en el tiempo t-1 y la alimenta de nuevo a la capa oculta en el tiempo t. Esto permite a la red "recordar" información sobre los estados previos y capturar dependencias temporales.
+
+
+**Ejecución del modelo:**
+
+Para ejecutar este modelo se utilizará la transformación logística, esta es una forma de normalización que puede ayudar a manejar mejor los valores extremos y a garantizar que los datos estén en un rango específico, previamente se ejecutaron los modelos con los datos crudos, con una diferenciación y con dos diferenciaciones sin lograr ajuste. Con la transformación logarítmica sí se logró:
+
+```{r message=FALSE, warning=FALSE}
+length(log(indice_casos.ts))
+```
+
+En este caso, se evidencia que contamos con 51 datos de casos nuevos de COVID, para aplicar redes neuronales debemos normalizar datos y para ello hemos asociado a nuestro dataset de base una variable “Z” y a partir de esta hemos realizar la normalización a través de la variable “S”.
+
+
+```{r}
+Z <- log(indice_casos.ts)
+Z
+S <- (Z-min(Z))/(max(Z)-min(Z))  
+S
+plot(S)
+```
+
+A continuación verificamos cuántas filas en total tiene nuestro conjunto de datos.
+
+```{r}
+tamano_total <- length(S)
+tamano_total
+```
+Ahora dividiremos los conjuntos de entrenamiento en un 75% y prueba en un 25% respectivamente.
+
+
+```{r}
+tamano_train <- round(tamano_total*0.75, digits = 0)
+train <- 0:(tamano_train-1)
+train
+```
+
+
+```{r}
+test <- (tamano_train):tamano_total
+test
+```
+
+Ahora vamos a generar un conjunto de datos con n columnas, donde cada una de ellas representará un valor futuro de la serie, utilizando una variable tipo zoo que refleje el período de desfase de la serie.
+
+
+```{r message=FALSE, warning=FALSE}
+
+library(zoo)
+library(quantmod)
+y <- as.zoo(S)
+x1 <- Lag(y, k = 1)
+x2 <- Lag(y, k = 2)
+x3 <- Lag(y, k = 3)
+x4 <- Lag(y, k = 4)
+x5 <- Lag(y, k = 5)
+x6 <- Lag(y, k = 6)
+x7 <- Lag(y, k = 7)
+x8 <- Lag(y, k = 8)
+x9 <- Lag(y, k = 9)
+x10 <- Lag(y, k = 10)
+x11 <- Lag(y, k = 11)
+x12 <- Lag(y, k = 12)
+slogN <- cbind(y,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12)
+```
+
+
+```{r}
+library(DT)
+DT::datatable(slogN)
+```
+
+A continuación, procederemos a eliminar los valores NA que se generaron al desplazar la serie.
+
+```{r}
+slogN1 <- slogN[-(1:12),]
+DT::datatable(slogN1)
+```
+
+Luego definimos los valores de entrada y salida de la red neuronal:
+
+```{r}
+inputs <- slogN1[,2:13]
+outputs <- slogN1[,1]
+```
+
+Ahora se desarrolla la red de Elman experimentando con diversas configuraciones de neuronas en las capas ocultas, variando también el número máximo de iteraciones y la tasa de aprendizaje. El objetivo es afinar la curva de predicción para que se ajuste lo más cercanamente posible al modelo de la serie. Estos son los parámetros que hemos seleccionado para construir nuestra red. Además, establecemos una semilla para garantizar la reproducibilidad de los resultados.
+
+```{r}
+set.seed(42)
+fit<-elman(inputs[train],outputs[train],size=3,learnFuncParams=c(0.1),
+                  maxit=10000)
+```
+
+En la gráfica siguiente se observa cómo evoluciona el error de la red con el número de iteraciones para los parámetros expuestos.
+
+```{r}
+plotIterativeError(fit, main = "Error iterativo para 3 Neuronas")
+```
+
+En la gráfica anterior se observa una convergencia rápida hacia cero, se espera entonces un ajuste rápido del modelo
+Ahora realizamos la predicción con el resto de los términos de la serie que son los datos seleccionados para test, pasamos pues una vez entrenada a probarla y a representarla gráficamente para ver el ajuste del modelo.
+
+```{r}
+y <- as.vector(outputs[-test])
+plot(y,type="l")
+pred <- predict(fit, inputs[-test])
+lines(pred,col = "red")
+```
+
+El ajuste con los parámetros seleccionados, es decir size 3 que significa el número de neuronas en las capas ocultas de la red de Elman y número máximo de iteraciones que son 10000 demuestra una buena capacidad predictiva, ya que la curva del modelo y la de la predicción se muestran muy cercanas. 
+
+Esta visualización gráfica es útil para afinar tanto la predicción como el modelo mientras se prueban distintos parámetros de la red de Elman, asegurándose de que la curva del modelo y la de la predicción se ajusten lo mejor posible.
+
+Ahora, con el efecto memoria, se avanza la serie temporal al menos un paso con una precisión excelente. Para lograrlo, reintroduciremos los datos de entrenamiento.
+
+```{r}
+predictions <- predict(fit, inputs[-train])
+predictions
+```
+
+Posteriormente desnormalizamos los datos para mejorar la interpretación:
+
+
+```{r}
+
+mod1 <- predictions*(max(Z)-min(Z))+min(Z)
+mod1
+```
+
+El modelo predice aproximadamente 15 casos nuevos en febrero y en marzo de 2024.
+
+Ahora veamos la representación de los valores predichos para el siguiente periodo:
+
+```{r}
+x <- 1:(tamano_total+length(mod1))
+y <- c(as.vector(Z),mod1)
+plot(x[1:tamano_total], y[1:tamano_total],col = "blue", type="l")
+lines( x[(tamano_total):length(x)], y[(tamano_total):length(x)], col="red")
+```
+```{r}
+length(y)
+```
+
+
+## Modelo de Jordan.
+
+
+El modelo de Jordan es otra variante de las redes neuronales recurrentes (RNN), desarrollado por Michael I. Jordan en 1986. Al igual que el modelo de Elman, el modelo de Jordan introduce una capa adicional que permite a la red capturar dependencias temporales en secuencias de datos. Sin embargo, hay algunas diferencias clave en la forma en que ambos modelos manejan la información de estado anterior.
+
+La red de Elman tiende a ser más adecuada para tareas donde es crucial capturar dependencias temporales intermedias y dinámicas complejas entre las entradas y las salidas ocultas. La red de Jordan: Es más adecuada para tareas donde la salida anterior directa puede ser un predictor importante del siguiente estado, como en el modelado de secuencias de decisiones.
+
+
+**Arquitectura de la Red Neuronal de Jordan:**
+
+La red neuronal de Jordan consta de las siguientes componentes:
+
+* **Capa de Entrada:** Recibe los datos de entrada.
+
+* **Capa Oculta:** Procesa los datos de entrada y también recibe la salida de la capa de contexto.
+
+* **Capa de Salida:** Produce la predicción o salida final.
+
+* **Capa de Contexto:** Almacena una copia de la salida de la capa de salida en el tiempo t-1 y la alimenta de nuevo a la capa oculta en el tiempo t.
+
+**Ejecución del modelo:**
+
+
+```{r}
+
+set.seed(42) #Se fija la semilla
+
+#teniendo los datos previamente separados, se ajustan los datos de entremaniento entrenando la red de Jordan:
+
+fit <-jordan(inputs[train],outputs[train],size=5,learnFuncParams=c(0.1),
+             maxit=35000)
+
+#Y graficamos el error iterativo:
+
+plotIterativeError(fit, main = "Error Iterativo para 5 neuronas")
+
+```
+
+De nuevo se observa cómo el error tiende a cero rápidamente.
+
+A continuación se realiza una comparación visual entre las salidas reales y las predicciones del modelo:
+
+
+```{r}
+y <- as.vector(outputs[-test])
+plot(y,type="l")
+pred <- predict(fit, inputs[-test])
+lines(pred,col = "red")
+```
+
+A diferencia del modelo de Elman, con el modelo de Jordan hay mayor diferencia entre los valores observados y los predichos por el modelo, los tres últimos periodos son los más parecidos.
+
+```{r}
+predictions <- predict(fit,inputs[-train])
+mod2 <- predictions*(max(Z)-min(Z))+min(Z)
+mod2
+```
+
+Con el modelo de Jordan se predicen aproximadamente 15 casos en febrero y cerca de 16 en marzo.
+
+
+```{r}
+x <- 1:(tamano_total+length(mod2))
+y <- c(as.vector(Z),mod2)
+plot(x[1:tamano_total], y[1:tamano_total],col = "blue", type="l")
+lines( x[(tamano_total):length(x)], y[(tamano_total):length(x)], col="red")
+```
+
+En la gráfica de predicción, similar al modelo de Elman, en el modelo de Jordan se presenta un incremento en los casos para el siguiente periodo.
+
